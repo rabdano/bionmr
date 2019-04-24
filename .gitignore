@@ -1,1 +1,4 @@
 .idea
+chromatin/N15_relaxation/__pycache__
+*.pyc
+

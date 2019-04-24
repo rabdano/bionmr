@@ -1,28 +1,26 @@
 import numpy as np
-from pyxmolpp2.polymer import *
-from pyxmolpp2.pdb import *
-from pyxmolpp2.geometry import *
-from pyxmolpp2_lib_sr import *
+from bionmr_utils.md import *
 import os
 import sys
-import pickle
-
-altered_records = AlteredPdbRecords(StandardPdbRecords.instance())
-altered_records.alter_record(RecordName("ATOM"),FieldName("serial"),[7,12])
 
 
 # setup parameters.
 path_to_traj = "../.."
-n_steps = ___N_DAT_FILES___
+first_dat_file = ___FIRST_DAT_FILE___
+last_dat_file = ___LAST_DAT_FILE___
+n_steps = last_dat_file - first_dat_file + 1
 stride = ___STRIDE___
-residues_of_interest = set(list(range(1,45)) + list(range(136,160)) + list(range(488,532)) + list(range(623,647)))
+residues_of_interest = set(list(range(1, 45)) + list(range(136, 160)) + list(range(488, 532)) + list(range(623, 647)))
 cut_autocorr_function = n_steps #ns
 HN_mask = "___HN_MASK___"
 align_dna = True
 
 # read trajectory
-ref = PdbFile(path_to_traj + "/5_run/run00001.pdb", altered_records).get_frame()
-traj = make_trajectory(path_to_traj, ref, first=(___FIRST_DAT_FILE___ - 1), limit=(n_steps + ___FIRST_DAT_FILE___ - 1))
+traj, ref = traj_from_dir(path=path_to_traj,
+                          reference_pdb=path_to_traj + "/5_run/run00001.pdb",
+                          stride=1,
+                          first=first_dat_file,
+                          last=last_dat_file)
 print("Trajectory contain %d frames, %d residues / %d atoms in each." % (len(traj), len(traj[0].asResidues), len(traj[0].asAtoms)))
 
 # create folders and open files
@@ -35,13 +33,13 @@ resi = tuple(zip(resids, resnames))
 print("Autocorrelation functions will be calculated for following residues:")
 print(resi)
 
-if not os.path.exists("cor_NH_n%d_s%d" % (n_steps, stride)): os.makedirs("cor_NH_n%d_s%d" % (n_steps, stride))
+if not os.path.exists("cor_NH_%d-%d" % (first_dat_file, last_dat_file)):
+    os.makedirs("cor_NH_%d-%d" % (first_dat_file, last_dat_file))
 # vectors - list of VectXYZ
 vectors = []
 
 first_time = True
 frame_id = 0
-is_nucleic = lambda a: a.name.str == "P"
 
 # run through trajectory and calculate vectors
 print("Processing frames...")
@@ -49,7 +47,7 @@ for frame in traj[::stride]:
     sys.stdout.write("Frame %d of %d\r" % (frame_id+1,traj.size/stride))
     
     if first_time:
-        s1, s2  = frame.asAtoms.filter(is_nucleic), ref.asAtoms.filter(is_nucleic)
+        s1, s2  = frame.asAtoms.filter(aName == "P"), ref.asAtoms.filter(aName == "P")
         moved_atoms = frame.asAtoms.filter((aName == "N") | (aName == HN_mask) | (aName == "P"))
         assert len(s1) == len(s2)
         N, H = [], []
@@ -70,26 +68,12 @@ for frame in traj[::stride]:
     frame_id += 1
 sys.stdout.write("\n")
 
-# # save vectors
-# print("Saving vectors...")
-# pickle.dump([ x.to_np for x in vectors ], open( "vectors.pickle", "wb" ))
-# print("vectors.pickle created")
-
 # calculate autocorrelation functions
 print("Calculating autocorrelation functions...")
 for i, rid, rname in zip(range(len(resids)), resids, resnames):
     sys.stdout.write("Residue %d of %d\r" % (i+1,len(resids)))
     ac = np.array(calc_autocorr_order_2(vectors[i], limit=int(cut_autocorr_function*1000/stride)))
     steps = np.arange(int(cut_autocorr_function*1000/stride))
-    np.savetxt("cor_NH_n%d_s%d"%(n_steps,stride)+"/%04d_%s.cor" % (rid, rname), np.vstack((steps,ac)).T,fmt="%14.6e")
+    np.savetxt("cor_NH_%d-%d" % (first_dat_file, last_dat_file)+"/%04d_%s.cor" % (rid, rname), np.vstack((steps, ac)).T, fmt="%14.6e")
 sys.stdout.write("\n")
 print("Done!")
-
-
-
-
-
-
-
-
-    

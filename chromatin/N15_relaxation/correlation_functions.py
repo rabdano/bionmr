@@ -20,7 +20,7 @@ class Corfun:
         self.data = []
         self.info = []
         self.resi = []
-        fns = sorted(glob(path))
+        fns = [c.split('/')[-1] for c in sorted(glob(path + '/*'))]
         fns.sort()
         for fn in fns:
             fds = fn.split('.')[0].split('_')
@@ -33,17 +33,15 @@ class Corfun:
             self.info.append(info)
             self.resi.append(resi)
 
-    @staticmethod
-    def multiexponent(self, x, parms):
-        N = int(len(parms) / 2)
-        amps, taus = parms[:N], parms[N:]
+    def multiexponent(self, x, *args):
+        N = int(len(args) / 2)
+        amps, taus = args[:N], args[N:]
         assert len(amps) == len(taus)
         res = np.zeros((N, len(x)))
         for i in range(N):
             res[i, :] = amps[i] * np.exp(-x / taus[i])
         return np.sum(res, axis=0)
 
-    @staticmethod
     def J(self, w, parms):
         N = int(len(parms)/2)
         amps, taus = parms[:N], parms[N:]
@@ -74,14 +72,14 @@ class Corfun:
                 sys.stdout.write('> fitting %s: %02d/%02d ' % (info, i+1, rep))
                 guess = np.zeros(n_exp * 2)
                 guess[:n_exp] = sp[:n_exp]
-                for j in range(n - 1):
+                for j in range(n_exp - 1):
                     guess[j + n_exp] = 10 ** (randminmax(np.log10(sp[j + n_exp]), np.log10(sp[j + n_exp + 1])))
                 guess[-1] = 10 ** (randminmax(np.log10(sp[-1]), np.log10(sp[-1] ** 2 / sp[-2])))
                 guess = guess.tolist()
-                popt, pcov = curve_fit(self.multiexponent, xdata, ydata, p0=guess, bounds=(lb, ub))
+                popt, pcov = curve_fit(self.multiexponent, xdata, ydata, p0=guess, bounds=(lb, ub), max_nfev=10000, ftol=1e-6)
 
                 pars = [p for p in popt]
-                rmsd = np.std(np.array([xdata, self.multiexponent(xdata, *popt)]), axis=0)
+                rmsd = np.sqrt(np.mean(np.power(np.subtract(ydata, self.multiexponent(xdata, *popt)), 2)))
 
                 if rmsd < rmsd_min:
                     rmsd_min = rmsd
@@ -92,7 +90,10 @@ class Corfun:
                 sys.stdout.write('\033[1A')  # cursor up by one line
 
             sys.stdout.write('\n')
-            pars_min = [pars_min[:n_exp] * normf, pars_min[n_exp:]]
+            for i in range(n_exp):
+                pars_min[i] = pars_min[i] * normf
+            # pars_min[:n_exp] = pars_min[:n_exp] * normf
+            # pars_min = [pars_min[:n_exp] * normf, pars_min[n_exp:]]
             self.pars.append(pars_min)
             self.rmsd.append(rmsd_min)
 
@@ -155,7 +156,8 @@ class Corfun:
         c2 = (1. / 3.) * ((CSA * 1e-6 * wX) ** 2)
 
         # convert unit of tau from point into second
-        parms[len(parms)/2:] = map(lambda x: x * step, parms[len(parms)/2:])
+        n_exp = int(len(parms)/2)
+        parms[n_exp:] = [x * step for x in parms[n_exp:]]
         R1 = 0.25 * d2 * (3 * self.J(wX, parms) + self.J(wH - wX, parms) + 6 * self.J(wH + wX, parms)) \
                   + c2 * self.J(wX, parms)
 
@@ -185,7 +187,8 @@ class Corfun:
         c2 = (1. / 3.) * ((CSA * 1e-6 * wX) ** 2)
 
         # convert unit of tau from point into second
-        parms[len(parms)/2:] = map(lambda x: x * step, parms[len(parms)/2:])
+        n_exp = int(len(parms)/2)
+        parms[n_exp:] = [x * step for x in parms[n_exp:]]
         R2 = 0.125 * d2 * (4 * self.J(0, parms) + 3 * self.J(wX, parms) + self.J(wH - wX, parms)
                            + 6 * self.J(wH, parms) + 6 * self.J(wH + wX, parms)) + \
              (1. / 6.) * c2 * (4 * self.J(0, parms) + 3 * self.J(wX, parms))

@@ -3,7 +3,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-plot_out_name = 'H4_ff14SB_TIP3P_R1.png'
+plot_out_name = 'R1.png'
 
 def cm2inch(*tupl):
     inch = 2.54
