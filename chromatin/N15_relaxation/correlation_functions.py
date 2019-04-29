@@ -33,10 +33,11 @@ class Corfun:
             self.info.append(info)
             self.resi.append(resi)
 
-    def multiexponent(self, x, *args):
+    @staticmethod
+    def multiexponent(x, *args):
         N = int(len(args) / 2)
         amps, taus = args[:N], args[N:]
-        assert len(amps) == len(taus)
+        assert len(amps) == len(taus), (amps, taus)
         res = np.zeros((N, len(x)))
         for i in range(N):
             res[i, :] = amps[i] * np.exp(-x / taus[i])
