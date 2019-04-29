@@ -6,9 +6,9 @@ import numpy as np
 from glob import glob
 from correlation_functions import Corfun
 
-n_exp = 3
+n_exp = ___N_EXP___
 plot_out_name = 'autocor_fit_results.pdf'
-
+step = 1e-12
 
 def cm2inch(*tupl):
     inch = 2.54
@@ -19,11 +19,11 @@ def cm2inch(*tupl):
 
 
 # read data
-cor = 'cor_NH_51-300_diluted'
+cor = 'cor_NH____FIRST_DAT_FILE___-___LAST_DAT_FILE____diluted'
 files = sorted(glob(cor+'/*.cor'))
 
 # read fitted amps and taus
-with open('autocor_fit_results.txt','r') as af:
+with open('autocor_fit_results.txt', 'r') as af:
     acfs = af.readlines()
 
 # create file for plot
@@ -39,7 +39,7 @@ for file, a in zip(files, acfs):
 
     # get amps and taus
     amps = [float(x) for x in a.split()[1:1+n_exp]]
-    taus = [float(x) for x in a.split()[1+n_exp:1+2*n_exp]]
+    taus = [float(x)/step for x in a.split()[1+n_exp:1+2*n_exp]]
 
     # get data
     data = np.genfromtxt(file)

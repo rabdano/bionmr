@@ -20,7 +20,7 @@ class Corfun:
         self.data = []
         self.info = []
         self.resi = []
-        fns = [c.split('/')[-1] for c in sorted(glob(path + '/*'))]
+        fns = [c.split('/')[-1] for c in sorted(glob(path + '/*.cor'))]
         fns.sort()
         for fn in fns:
             fds = fn.split('.')[0].split('_')
@@ -43,7 +43,8 @@ class Corfun:
             res[i, :] = amps[i] * np.exp(-x / taus[i])
         return np.sum(res, axis=0)
 
-    def J(self, w, parms):
+    @staticmethod
+    def J(w, parms):
         N = int(len(parms)/2)
         amps, taus = parms[:N], parms[N:]
         assert len(amps) == len(taus)
@@ -53,7 +54,7 @@ class Corfun:
             res[i] = 2.0/5.0*amps[i]*taus[i]/(1+(w*taus[i])**2)
         return np.sum(res, axis=0)
 
-    def fit(self, n_exp=6, rep=5, sp=None, lb=None, ub=None, fout=None):
+    def fit(self, n_exp=6, rep=5, step=1, sp=None, lb=None, ub=None, fout=None):
         self.pars = []
         self.rmsd = []
 
@@ -68,6 +69,7 @@ class Corfun:
 
             rmsd_min = np.inf
             pars_min = [0] * n_exp * 2
+            pars = pars_min
 
             for i in range(rep):
                 sys.stdout.write('> fitting %s: %02d/%02d ' % (info, i+1, rep))
@@ -77,10 +79,14 @@ class Corfun:
                     guess[j + n_exp] = 10 ** (randminmax(np.log10(sp[j + n_exp]), np.log10(sp[j + n_exp + 1])))
                 guess[-1] = 10 ** (randminmax(np.log10(sp[-1]), np.log10(sp[-1] ** 2 / sp[-2])))
                 guess = guess.tolist()
-                popt, pcov = curve_fit(self.multiexponent, xdata, ydata, p0=guess, bounds=(lb, ub), max_nfev=10000, ftol=1e-6)
 
-                pars = [p for p in popt]
-                rmsd = np.sqrt(np.mean(np.power(np.subtract(ydata, self.multiexponent(xdata, *popt)), 2)))
+                try:
+                    popt, pcov = curve_fit(self.multiexponent, xdata, ydata, p0=guess, bounds=(lb, ub), max_nfev=10000, ftol=1e-6)
+                    pars = [p for p in popt]
+                    rmsd = np.sqrt(np.mean(np.power(np.subtract(ydata, self.multiexponent(xdata, *popt)), 2)))
+                except RuntimeError:
+                    sys.stdout.write('[bad rep #%d] ' % i)
+
 
                 if rmsd < rmsd_min:
                     rmsd_min = rmsd
@@ -91,10 +97,15 @@ class Corfun:
                 sys.stdout.write('\033[1A')  # cursor up by one line
 
             sys.stdout.write('\n')
+
+            # recover normalization
             for i in range(n_exp):
                 pars_min[i] = pars_min[i] * normf
-            # pars_min[:n_exp] = pars_min[:n_exp] * normf
-            # pars_min = [pars_min[:n_exp] * normf, pars_min[n_exp:]]
+
+            # convert tau units from points to seconds
+            for i in range(n_exp):
+                pars_min[i + n_exp] = pars_min[i + n_exp] * step
+
             self.pars.append(pars_min)
             self.rmsd.append(rmsd_min)
 
@@ -107,11 +118,11 @@ class Corfun:
                 f.write(line)
             f.close()
 
-    def calc_R1(self, step, opfreq=600e6, X='N15',
+    def calc_R1(self, opfreq=600e6, X='N15',
                 CSA=None, rHX=None, fnout=None):
         self.R1 = []
         for pars in self.pars:
-            R1 = self.R1_fun(pars, step, opfreq, X, CSA, rHX)
+            R1 = self.R1_fun(pars, opfreq, X, CSA, rHX)
             self.R1.append(R1)
 
         if fnout:
@@ -120,11 +131,11 @@ class Corfun:
                 f.write('%s  %8.5e\n'%(info,R1))
             f.close()
 
-    def calc_R2(self, step, opfreq=600e6, X='N15',
+    def calc_R2(self, opfreq=600e6, X='N15',
                 CSA=None, rHX=None, fnout=None):
         self.R2 = []
         for pars in self.pars:
-            R2 = self.R2_fun(pars, step, opfreq, X, CSA, rHX)
+            R2 = self.R2_fun(pars, opfreq, X, CSA, rHX)
             self.R2.append(R2)
 
         if fnout:
@@ -133,11 +144,11 @@ class Corfun:
                 f.write('%s  %8.5e\n'%(info,R2))
             f.close()
 
-    def R1_fun(self, parms, step, opfreq=600e6, X='N15', CSA=None, rHX=None):
+    def R1_fun(self, parms, opfreq=600e6, X='N15', CSA=None, rHX=None):
         # calculate R1 for fix-length inter-spin vector
         # INPUT: amps --- amplitute of the associated taus
         #        taus --- correlation time components
-        #        step in unit of s; opfreq in unit of Hz
+        #        opfreq in unit of Hz
 
         # Calculate dipolar coupling constant d2 -------------------------------
         u0 = 4 * np.pi * 1e-7
@@ -156,19 +167,16 @@ class Corfun:
         wX = wH / gHX
         c2 = (1. / 3.) * ((CSA * 1e-6 * wX) ** 2)
 
-        # convert unit of tau from point into second
-        n_exp = int(len(parms)/2)
-        parms[n_exp:] = [x * step for x in parms[n_exp:]]
         R1 = 0.25 * d2 * (3 * self.J(wX, parms) + self.J(wH - wX, parms) + 6 * self.J(wH + wX, parms)) \
                   + c2 * self.J(wX, parms)
 
         return R1
 
-    def R2_fun(self, parms, step, opfreq=600e6, X='N15', CSA=None, rHX=None):
+    def R2_fun(self, parms, opfreq=600e6, X='N15', CSA=None, rHX=None):
         # calculate R1 for fix-length inter-spin vector
         # INPUT: amps --- amplitute of the associated taus
         #        taus --- correlation time components
-        #        step in unit of s; opfreq in unit of Hz
+        #        opfreq in unit of Hz
 
         # Calculate dipolar coupling constant d2 -------------------------------
         u0 = 4 * np.pi * 1e-7
@@ -187,9 +195,6 @@ class Corfun:
         wX = wH / gHX
         c2 = (1. / 3.) * ((CSA * 1e-6 * wX) ** 2)
 
-        # convert unit of tau from point into second
-        n_exp = int(len(parms)/2)
-        parms[n_exp:] = [x * step for x in parms[n_exp:]]
         R2 = 0.125 * d2 * (4 * self.J(0, parms) + 3 * self.J(wX, parms) + self.J(wH - wX, parms)
                            + 6 * self.J(wH, parms) + 6 * self.J(wH + wX, parms)) + \
              (1. / 6.) * c2 * (4 * self.J(0, parms) + 3 * self.J(wX, parms))

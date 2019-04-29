@@ -7,18 +7,11 @@ DILUTE_STRIDE=100
 KEEP_ACF_FRACTION=0.8
 REP=3
 N_EXP=6
-SCRIPTS_PATH="/home/seva/scripts/git/bionmr/chromatin/N15_relaxation"
+SCRIPTS_PATH=/home/seva/scripts/git/bionmr/chromatin/N15_relaxation
 
-.PHONY: all clean
+.PHONY: all clean plot init
 
-clean:
-	rm -rf cor_NH_*
-	rm -rf *_results.txt
-	rm -rf *.png
-	rm -rf *.pdf
-	rm -rf *.py
-
-init:
+get_NH_corfun_pyxmolpp2.py:
 	cp ${SCRIPTS_PATH}/get_NH_corfun_pyxmolpp2.py .
 	sed -i 's/___FIRST_DAT_FILE___/${FIRST_DAT_FILE}/g' get_NH_corfun_pyxmolpp2.py
 	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' get_NH_corfun_pyxmolpp2.py
@@ -40,14 +33,36 @@ init:
 	sed -i 's/___N_EXP___/${N_EXP}/g' calculate_R1_R2.py
 	sed -i 's/___REP___/${REP}/g' calculate_R1_R2.py
 
-cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}: init
+	cp ${SCRIPTS_PATH}/plot_autocorrelation_fit.py .
+	sed -i 's/___N_EXP___/${N_EXP}/g' plot_autocorrelation_fit.py
+	sed -i 's/___FIRST_DAT_FILE___/${FIRST_DAT_FILE}/g' plot_autocorrelation_fit.py
+	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' plot_autocorrelation_fit.py
+
+	cp ${SCRIPTS_PATH}/plot_H4_R1.py .
+	cp ${SCRIPTS_PATH}/plot_H4_R2.py .
+
+cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}: | get_NH_corfun_pyxmolpp2.py
 	python3 get_NH_corfun_pyxmolpp2.py
 
-cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}_diluted: cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}
+cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}_diluted: | cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}
 	python3 dilute_autocorr.py
 
-R2_results.txt: cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}_diluted
-	python3 calculate_R1_R2.py
+R2_results.txt: | cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}_diluted
+	export PYTHONPATH="${SCRIPTS_PATH}:${PYTHONPATH}" && python3 calculate_R1_R2.py
 
-all: R2_results.txt
 
+plot:
+	python3 plot_H4_R1.py
+	python3 plot_H4_R2.py
+	python3 plot_autocorrelation_fit.py
+
+init: get_NH_corfun_pyxmolpp2.py
+
+all: | R2_results.txt
+
+clean:
+	rm -rf cor_NH_*
+	rm -rf *_results.txt
+	rm -rf *.png
+	rm -rf *.pdf
+	rm -rf *.py

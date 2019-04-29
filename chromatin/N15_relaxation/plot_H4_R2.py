@@ -51,7 +51,7 @@ plt.ylabel(r'${\rm R_{2},\ s^{-1}}$')
 plt.axis([0,26,0,165])
 plt.yticks(np.arange(0,201,20))
 # Put a legend above current axis
-ax.legend(loc='lower left', bbox_to_anchor= (-0.1, 1.01), ncol=3, 
+ax.legend(loc='lower left', bbox_to_anchor= (0.01, 1.01), ncol=3,
             borderaxespad=0, frameon=False, numpoints=1)
 plt.grid(True)
 plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
