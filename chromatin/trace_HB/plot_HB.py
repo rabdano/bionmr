@@ -78,7 +78,7 @@ with PdfPages('HB_figures.pdf') as pdf:
         im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto')
 
         # setup ticks and labels
-        plt.yticks(range(step), ['%s' % hbs[i] for i in range(step)])
+        plt.yticks(range(step), ['%s' % hbs[i] for i in range(i1, i2)])
         plt.xlabel('Time, ns')
 
         # save figure
