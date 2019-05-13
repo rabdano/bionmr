@@ -58,7 +58,7 @@ avg_data = average_data(data, avg_win)
 
 # plot figures for all HBs
 
-cmap = plt.get_cmap('Reds', 5)
+cmap = plt.get_cmap('Greys', 5)
 
 with PdfPages('HB_figures.pdf') as pdf:
     for hb_idx in range(0, len(hbs), step):
