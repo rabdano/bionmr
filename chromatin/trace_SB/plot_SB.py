@@ -31,7 +31,7 @@ def average_data(data, window=100):
     nw = int(n/window)
     result = np.zeros((nw, m))
     for start in range(0, len(data), window):
-        result[int(start/window), :] = np.around(np.mean(data[start:start+window, :], axis=0))
+        result[int(start/window), :] = np.mean(data[start:start+window, :], axis=0)
     return result
 
 
@@ -53,7 +53,7 @@ avg_data = average_data(data, avg_win)
 
 # plot figures for all HBs
 
-cmap = plt.get_cmap('binary', 2)
+cmap = plt.get_cmap('Greys', 5)
 
 with PdfPages('SB_figures.pdf') as pdf:
     for sb_idx in range(0, len(sbs), step):
