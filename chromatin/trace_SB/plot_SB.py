@@ -35,6 +35,43 @@ def average_data(data, window=100):
     return result
 
 
+def correct_numbering(sbs, renumber_map=None):
+    if not renumber_map:
+        renumber_map = {'A': [rid for rid in range(1, 136)],
+                        'B': [rid for rid in range(1, 103)],
+                        'C': [rid for rid in range(1, 129)],
+                        'D': [rid for rid in range(1, 123)],
+                        'E': [rid for rid in range(1, 136)],
+                        'F': [rid for rid in range(1, 103)],
+                        'G': [rid for rid in range(1, 129)],
+                        'H': [rid for rid in range(1, 123)],
+                        'I': [rid for rid in range(1, 148)],
+                        'J': [rid for rid in range(1, 148)]}
+
+    absolute_map = {}
+    renumber_array = []
+    last_resid = 0
+
+    for k in sorted(renumber_map):
+        v = renumber_map[k]
+        absolute_map[k] = [rid for rid in range(last_resid + 1, last_resid + len(v) + 1)]
+        renumber_array += v
+        last_resid = len(renumber_array)
+
+    for hb in sbs:
+        i1 = hb[0][1]
+        i2 = hb[1][1]
+        for k, v in absolute_map.items():
+            if i1 in v:
+                hb[0].insert(0, k)
+            if i2 in v:
+                hb[1].insert(0, k)
+        hb[0][2] = renumber_array[hb[0][2] - 1]
+        hb[1][2] = renumber_array[hb[1][2] - 1]
+
+    return sbs
+
+
 # read data and parameters
 with open(sb_trace, 'r') as f:
     header = f.readline()
@@ -98,6 +135,7 @@ with PdfPages('SB_figures_H4.pdf') as pdf:
     cur_data = avg_data
 
     # setup ticks and labels
+    sbs = correct_numbering(sbs)
     plt.yticks(range(len(sbs)), ['%s' % sbs[i] for i in range(len(sbs))])
     plt.xlabel('Time, ns')
 
