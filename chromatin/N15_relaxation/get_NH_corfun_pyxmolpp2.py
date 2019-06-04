@@ -1,7 +1,24 @@
 import numpy as np
+from math import ceil
 from bionmr_utils.md import *
 import os
 import sys
+
+
+def cor(vec, grid, skip_frames):
+    for i in range(len(vec)):
+        vec[i] = vec[i] / np.linalg.norm(vec[i])
+    acf = np.zeros(len(grid))
+    for k, lag in enumerate(grid):
+        res = []
+        for i, v1, j, v2 in zip(range(len(vec)), vec, range(lag, len(vec), 1), vec[lag:]):
+            if i in skip_frames:
+                continue
+            if j in skip_frames:
+                continue
+            res.append((3.0 * np.cos(np.dot(v1, v2))**2 - 1) / 2.0)
+        acf[k] = np.mean(np.array(res))
+    return acf
 
 
 # setup parameters.
@@ -10,10 +27,15 @@ first_dat_file = ___FIRST_DAT_FILE___
 last_dat_file = ___LAST_DAT_FILE___
 n_steps = last_dat_file - first_dat_file + 1
 stride = ___STRIDE___
-residues_of_interest = set(list(range(1, 45)) + list(range(136, 160)) + list(range(488, 532)) + list(range(623, 647)))
 cut_autocorr_function = n_steps #ns
 HN_mask = "___HN_MASK___"
-align_dna = True
+align_dna = ___ALING_DNA___
+fft_acf = ___FFT_ACF___
+scaling = ___SCALING___
+ratio = ___KEEP_ACF_FRACTION___
+remove_first_point = ___REMOVE_FIRST_POINT___
+
+residues_of_interest = set(list(range(1, 45)) + list(range(136, 160)) + list(range(488, 532)) + list(range(623, 647)))
 
 # read trajectory
 traj, ref = traj_from_dir(path=path_to_traj,
@@ -37,6 +59,7 @@ if not os.path.exists("cor_NH_%d-%d" % (first_dat_file, last_dat_file)):
     os.makedirs("cor_NH_%d-%d" % (first_dat_file, last_dat_file))
 # vectors - list of VectXYZ
 vectors = []
+skip_frames = {}
 
 first_time = True
 frame_id = 0
@@ -64,16 +87,41 @@ for frame in traj[::stride]:
         # for a in moved_atoms:
         #     a.r = alignment.transform(a.r)
         for i, N_at, H_at in zip(range(len(resids)), N, H):
+            vec = H_at.r - N_at.r
+            if vec.len() < 0.5:
+                skip_frames.add(frame.index)
             vectors[i].append(H_at.r - N_at.r)
     frame_id += 1
 sys.stdout.write("\n")
 
+
+if len(skip_frames) > 0:
+    fft_acf = False
+
+
 # calculate autocorrelation functions
+steps = np.arange(int(cut_autocorr_function*1000/stride))
+grid = []
+nlim = ratio * len(vectors[0])
+if not remove_first_point:
+    grid.append(0)
+tau = 1.0
+while tau <= nlim:
+    grid.append(int(tau))
+    tau = ceil(tau * scaling)
+
 print("Calculating autocorrelation functions...")
 for i, rid, rname in zip(range(len(resids)), resids, resnames):
-    sys.stdout.write("Residue %d of %d\r" % (i+1,len(resids)))
-    ac = np.array(calc_autocorr_order_2(vectors[i], limit=int(cut_autocorr_function*1000/stride)))
-    steps = np.arange(int(cut_autocorr_function*1000/stride))
-    np.savetxt("cor_NH_%d-%d" % (first_dat_file, last_dat_file)+"/%04d_%s.cor" % (rid, rname), np.vstack((steps, ac)).T, fmt="%14.6e")
+    sys.stdout.write("Residue %d of %d\r" % (i+1, len(resids)))
+    if fft_acf:
+        ac = np.array(calc_autocorr_order_2(vectors[i], limit=int(cut_autocorr_function*1000/stride)))
+        np.savetxt("cor_NH_%d-%d_diluted" % (first_dat_file, last_dat_file)+"/%04d_%s.cor" % (rid, rname),
+                   np.vstack((steps[grid], ac[grid])).T, fmt="%14.6e")
+    else:
+        ac = cor(vectors[i], grid, skip_frames)
+        np.savetxt("cor_NH_%d-%d_diluted" % (first_dat_file, last_dat_file) + "/%04d_%s.cor" % (rid, rname),
+                   np.vstack((steps[grid], ac)).T, fmt="%14.6e")
+
+
 sys.stdout.write("\n")
 print("Done!")
