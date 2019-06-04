@@ -6,17 +6,18 @@ import sys
 
 
 def cor(vec, grid, skip_frames):
+    vectors = np.zeros((len(vec), 3))
     for i in range(len(vec)):
-        vec[i] = vec[i] / np.linalg.norm(vec[i])
+        vectors[i] = vec[i].to_np / np.linalg.norm(vec[i].to_np)
     acf = np.zeros(len(grid))
     for k, lag in enumerate(grid):
         res = []
-        for i, v1, j, v2 in zip(range(len(vec)), vec, range(lag, len(vec), 1), vec[lag:]):
+        for i, j in zip(range(len(vectors)), range(lag, len(vectors), 1)):
             if i in skip_frames:
                 continue
             if j in skip_frames:
                 continue
-            res.append((3.0 * np.cos(np.dot(v1, v2))**2 - 1) / 2.0)
+            res.append((3.0 * np.dot(vectors[i], vectors[j])**2 - 1) / 2.0)
         acf[k] = np.mean(np.array(res))
     return acf
 
@@ -55,11 +56,11 @@ resi = tuple(zip(resids, resnames))
 print("Autocorrelation functions will be calculated for following residues:")
 print(resi)
 
-if not os.path.exists("cor_NH_%d-%d" % (first_dat_file, last_dat_file)):
-    os.makedirs("cor_NH_%d-%d" % (first_dat_file, last_dat_file))
+if not os.path.exists("cor_NH_%d-%d_diluted" % (first_dat_file, last_dat_file)):
+    os.makedirs("cor_NH_%d-%d_diluted" % (first_dat_file, last_dat_file))
 # vectors - list of VectXYZ
 vectors = []
-skip_frames = {}
+skip_frames = set()
 
 first_time = True
 frame_id = 0
