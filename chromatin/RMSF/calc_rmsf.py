@@ -19,6 +19,7 @@ traj, ref = traj_from_dir(path=path_to_traj,
                           last=last_dat_file)
 
 print("Trajectory contain %d frames, %d residues / %d atoms in each." % (len(traj), len(traj[0].asResidues), len(traj[0].asAtoms)))
+print("Using run%05d.dat - run%05d.dat" % (first_dat_file, last_dat_file))
 
 # get residue ids for secondary structure from DSSP using Biopython and PDB
 protein_chains = 'ABCDEFGH'
@@ -64,7 +65,7 @@ for frame in tqdm(traj[::stride]):
     # frame.asAtoms.transform(alignment)
 
     # skip corrupted frames
-    d = distance(check_atom_1, check_atom_2)
+    d = distance(check_atom_1.r, check_atom_2.r)
     if d < 0.5:
         skipped_frames.add(frame.index)
         continue
