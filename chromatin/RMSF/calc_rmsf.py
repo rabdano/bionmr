@@ -4,7 +4,8 @@ from tqdm import tqdm
 import numpy as np
 
 # setup trajectory parameters
-n_dat_files = 500  # ns
+first_dat_file = 1
+last_dat_file = 500
 stride = 1  # ps
 residues_of_interest = set(list(range(1, 45)) + list(range(136, 160)) + list(range(488, 532)) + list(range(623, 647)))
 chain_letters = 'ABEF'
@@ -14,8 +15,10 @@ path_to_traj = "../.."
 traj, ref = traj_from_dir(path=path_to_traj,
                           reference_pdb=path_to_traj + "/5_run/run00001.pdb",
                           stride=1,
-                          first=1,
-                          last=n_dat_files)
+                          first=first_dat_file,
+                          last=last_dat_file)
+
+print("Trajectory contain %d frames, %d residues / %d atoms in each." % (len(traj), len(traj[0].asResidues), len(traj[0].asAtoms)))
 
 # get residue ids for secondary structure from DSSP using Biopython and PDB
 protein_chains = 'ABCDEFGH'
