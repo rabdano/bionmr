@@ -10,7 +10,7 @@ residues_of_interest = set(list(range(1, 45)) + list(range(136, 160)) + list(ran
 chain_letters = 'ABEF'
 
 # load trajectory
-path_to_traj = "/home/seva/chromatin/3_solution/amber_ff14SB_TIP4PD_0.1M_NaCl_NPT"
+path_to_traj = "../.."
 traj, ref = traj_from_dir(path=path_to_traj,
                           reference_pdb=path_to_traj + "/5_run/run00001.pdb",
                           stride=1,
@@ -45,10 +45,13 @@ avg_coords = [c.toCoords.transform(UniformScale3d(0)) for c in ca_ref]
 
 # calculate average coordinates across N frames
 print('calculate average coordinates across N frames')
+skipped_frames = set()
 first = True
 for frame in tqdm(traj[::stride]):
     if first:
         # DNA = frame.asAtoms.filter(cName.is_in({'I', 'J'}) & (aName == 'P'))
+        check_atom_1 = frame.asAtoms[0]
+        check_atom_2 = frame.asAtoms[1]
         align = [frame.asAtoms.filter((aName == 'CA') & (rId.is_in(ss_res))) for ss_res in ss_residues]
         ca = [frame.asAtoms.filter((aName == 'CA') & (cName == ChainName(c)) & (rId.is_in(residues_of_interest))) for c in chain_letters]
         first = False
@@ -56,6 +59,12 @@ for frame in tqdm(traj[::stride]):
     # # align to DNA
     # alignment = DNA.alignment_to(DNA_ref)
     # frame.asAtoms.transform(alignment)
+
+    # skip corrupted frames
+    d = distance(check_atom_1, check_atom_2)
+    if d < 0.5:
+        skipped_frames.add(frame.index)
+        continue
 
     for i, chain in enumerate(ca):
 
@@ -68,8 +77,10 @@ for frame in tqdm(traj[::stride]):
             avg_coords[i][j] += a.r
 
 # 'divide' by number of frames
+print('Frames skipped:\n')
+print(skipped_frames)
 for crds in avg_coords:
-    crds.transform(UniformScale3d(1.0 / traj.size * stride))
+    crds.transform(UniformScale3d(1.0 / (traj.size - len(skipped_frames)) * stride))
 
 
 # align to average coordinates and calculate RMSF for each CA
@@ -87,6 +98,10 @@ for frame in tqdm(traj[::stride]):
     # alignment = DNA.alignment_to(DNA_ref)
     # frame.asAtoms.transform(alignment)
 
+    # skip corrupted frames
+    if frame.index in skipped_frames:
+        continue
+
     for i, chain in enumerate(ca):
         # # align to average coordinates
         # chain.align_to(avg_coords[i])
@@ -99,7 +114,7 @@ for frame in tqdm(traj[::stride]):
         for j, a in enumerate(chain):
             rmsf[i][j] += (a.r - avg_coords[i][j]).len2()
 
-rmsf = [np.sqrt(rmsf_i / traj.size * stride) for rmsf_i in rmsf]
+rmsf = [np.sqrt(rmsf_i / (traj.size - len(skipped_frames)) * stride) for rmsf_i in rmsf]
 
 
 # write RMSF to file
