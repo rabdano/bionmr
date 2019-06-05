@@ -18,7 +18,7 @@ traj, ref = traj_from_dir(path=path_to_traj,
                           first=first_dat_file,
                           last=last_dat_file)
 
-print("Trajectory contain %d frames, %d residues / %d atoms in each." % (len(traj), len(traj[0].asResidues), len(traj[0].asAtoms)))
+print("Trajectory contain %d frames with %d chains / %d residues / %d atoms" % (len(traj), len(traj[0].asChains), len(traj[0].asResidues), len(traj[0].asAtoms)))
 print("Using run%05d.dat - run%05d.dat" % (first_dat_file, last_dat_file))
 
 # get residue ids for secondary structure from DSSP using Biopython and PDB
@@ -81,8 +81,7 @@ for frame in tqdm(traj[::stride]):
             avg_coords[i][j] += a.r
 
 # 'divide' by number of frames
-print('Frames skipped:\n')
-print(skipped_frames)
+print('Frames skipped:\n', sorted(skipped_frames))
 for crds in avg_coords:
     crds.transform(UniformScale3d(1.0 / (traj.size - len(skipped_frames)) * stride))
 

@@ -28,7 +28,9 @@ traj, ref = traj_from_dir(path=path_to_traj,
                           stride=1,
                           first=first_dat_file,
                           last=last_dat_file)
-print("Trajectory contain %d frames, %d residues / %d atoms in each." % (len(traj), len(traj[0].asResidues), len(traj[0].asAtoms)))
+
+print("Trajectory contain %d frames with %d chains / %d residues / %d atoms" % (len(traj), len(traj[0].asChains), len(traj[0].asResidues), len(traj[0].asAtoms)))
+print("Using run%05d.dat - run%05d.dat" % (first_dat_file, last_dat_file))
 
 # create folders and open files
 resids = []
