@@ -42,7 +42,7 @@ get_NH_corfun_pyxmolpp2.py:
 	cp ${SCRIPTS_PATH}/plot_H4_R2.py .
 
 cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}_diluted: | get_NH_corfun_pyxmolpp2.py
-	python3 get_NH_corfun_pyxmolpp2.py
+	export PYTHONPATH="${SCRIPTS_PATH}:${PYTHONPATH}" && python3 get_NH_corfun_pyxmolpp2.py
 
 R2_results.txt: | cor_NH_${FIRST_DAT_FILE}-${LAST_DAT_FILE}_diluted
 	export PYTHONPATH="${SCRIPTS_PATH}:${PYTHONPATH}" && python3 calculate_R1_R2.py

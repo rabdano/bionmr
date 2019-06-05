@@ -200,3 +200,20 @@ class Corfun:
              (1. / 6.) * c2 * (4 * self.J(0, parms) + 3 * self.J(wX, parms))
 
         return R2
+
+
+def cor(vec, grid, skip_frames):
+    vectors = np.zeros((len(vec), 3))
+    for i in range(len(vec)):
+        vectors[i] = vec[i].to_np / np.linalg.norm(vec[i].to_np)
+    acf = np.zeros(len(grid))
+    for k, lag in enumerate(grid):
+        res = []
+        for i, j in zip(range(len(vectors)), range(lag, len(vectors), 1)):
+            if i in skip_frames:
+                continue
+            if j in skip_frames:
+                continue
+            res.append((3.0 * np.dot(vectors[i], vectors[j])**2 - 1) / 2.0)
+        acf[k] = np.mean(np.array(res))
+    return acf
