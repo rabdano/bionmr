@@ -31,7 +31,7 @@ init:
 	sed -i 's|___SCRIPTS_PATH___|${SCRIPTS_PATH}|g' plot_cs.py
 
 ../../pdb_unwrapped/run${LAST_PDB_FILE_FMT}.pdb:
-	cd ../..; pwd; cp /home/seva/scripts/get_pbc_pdb.sh .; ./get_pbc_pdb.sh
+	cd ../..; pwd; cp ${SCRIPTS_PATH}/../wrap/get_pbc_pdb.sh .; ./get_pbc_pdb.sh
 
 pdb_shiftx2: | init ../../pdb_unwrapped/run${LAST_PDB_FILE_FMT}.pdb
 	mkdir -p pdb_shiftx2
