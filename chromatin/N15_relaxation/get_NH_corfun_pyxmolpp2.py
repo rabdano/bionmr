@@ -84,6 +84,7 @@ sys.stdout.write("\n")
 
 if len(skip_frames) > 0:
     fft_acf = False
+    np.savetxt('skip_frames.txt', np.array(list(skip_frames)), delimiter=',', header='')
 
 
 # calculate autocorrelation functions
