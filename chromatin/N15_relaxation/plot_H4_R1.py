@@ -5,6 +5,8 @@ import numpy as np
 
 plot_out_name = 'R1.png'
 
+H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
+
 def cm2inch(*tupl):
     inch = 2.54
     if isinstance(tupl[0], tuple):
@@ -39,7 +41,6 @@ H4_exp_R1 = np.array([1.26765865, 1.291394278, 1.166972683, 1.213193526, 1.17605
 
 # plot
 fig, ax = plt.subplots()
-
 ax.plot(H4_resids, H4_R1_1, marker="D", ms=5, markeredgecolor="b", markerfacecolor="b", \
     linewidth=1.0, color="b", label="H4-1 136-159")
 ax.plot(H4_resids, H4_R1_2, marker="D", ms=5, markeredgecolor="g", markerfacecolor="g", \
@@ -47,13 +48,14 @@ ax.plot(H4_resids, H4_R1_2, marker="D", ms=5, markeredgecolor="g", markerfacecol
 ax.plot(H4_exp_resids, H4_exp_R1, marker="o", ms=5, markeredgecolor="r", markerfacecolor="r",\
     linestyle='None', label="Experimental")
 
-plt.xlabel(r'${\rm Residue}$')
 plt.ylabel(r'${\rm R_{1},\ s^{-1}}$')
 plt.axis([0,26,0,2])
+plt.xticks(np.arange(1, 25, 1))
 plt.yticks(np.arange(0,2.1,0.1))
+n_labels = len(ax.get_xticklabels())
+ax.set_xticklabels(['{}\n{}'.format(H4_seq[i], i+1) for i in range(0, n_labels)])
 # Put a legend above current axis
 ax.legend(loc='lower left', bbox_to_anchor= (0.01, 1.01), ncol=3,
             borderaxespad=0, frameon=False, numpoints=1)
-plt.grid(True)
 plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
 
