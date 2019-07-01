@@ -5,6 +5,8 @@ import numpy as np
 
 plot_out_name = 'R2.png'
 
+H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
+
 def cm2inch(*tupl):
     inch = 2.54
     if isinstance(tupl[0], tuple):
@@ -46,13 +48,14 @@ ax.plot(H4_resids, H4_R2_2, marker="D", ms=5, markeredgecolor="g", markerfacecol
 ax.plot(H4_exp_resids, H4_exp_R2, marker="o", ms=5, markeredgecolor="r", markerfacecolor="r",\
     linestyle='None', label="Experimental")
 
-plt.xlabel(r'${\rm Residue}$')
 plt.ylabel(r'${\rm R_{2},\ s^{-1}}$')
 plt.axis([0,26,0,165])
+plt.xticks(np.arange(1, 25, 1))
 plt.yticks(np.arange(0,201,20))
+n_labels = len(ax.get_xticklabels())
+ax.set_xticklabels(['{}\n{}'.format(H4_seq[i], i+1) for i in range(0, n_labels)])
 # Put a legend above current axis
 ax.legend(loc='lower left', bbox_to_anchor= (0.01, 1.01), ncol=3,
             borderaxespad=0, frameon=False, numpoints=1)
-plt.grid(True)
 plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
 
