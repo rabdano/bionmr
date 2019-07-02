@@ -53,7 +53,14 @@ plt.axis([0,26,0,2])
 plt.xticks(np.arange(1, 25, 1))
 plt.yticks(np.arange(0,2.1,0.1))
 n_labels = len(ax.get_xticklabels())
-ax.set_xticklabels(['{}\n{}'.format(H4_seq[i], i+1) for i in range(0, n_labels)])
+labels = []
+for i in range(0, n_labels):
+    if (((i+1) % 5) == 0) | (i == 0):
+        dig = str(i+1)
+    else:
+        dig = ''
+    labels.append('{}\n{}'.format(dig, H4_seq[i]))
+ax.set_xticklabels(labels)
 # Put a legend above current axis
 ax.legend(loc='lower left', bbox_to_anchor= (0.01, 1.01), ncol=3,
             borderaxespad=0, frameon=False, numpoints=1)
