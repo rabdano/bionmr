@@ -5,7 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # User input:
 hb_trace = 'hb_trace.dat'  # file with data about hydrogen bonds
-avg_win = 100  # window for averaging of data
+avg_win = 250  # window for averaging of data
 step = 25  # traces per page in figures
 rid_of_interest = list(range(136, 160)) + list(range(623, 647))
 
@@ -83,9 +83,9 @@ with open(hb_trace, 'r') as f:
 data = np.genfromtxt(hb_trace, skip_header=1)
 with open('input.json', 'r') as f:
     pars = json.load(f)
-trj_filename_first = pars['trj_filename_first']
-trj_filename_last = pars['trj_filename_last']
-stride = pars['stride']
+trj_filename_first = int(pars['trj_filename_first'])
+trj_filename_last = int(pars['trj_filename_last'])
+stride = int(pars['stride'])
 
 
 # extract header and average data
@@ -112,10 +112,11 @@ with PdfPages('HB_figures.pdf') as pdf:
 
         # plot image
         ax = plt.gca()
-        im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto')
+        im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, step-0.5))
 
         # setup ticks and labels
         plt.yticks(range(step), ['%s' % hbs[i] for i in range(i1, i2)])
+
         plt.xlabel('Time, ns')
 
         # save figure
@@ -146,7 +147,7 @@ with PdfPages('HB_figures_H4.pdf') as pdf:
 
     # plot image
     ax = plt.gca()
-    im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto')
+    im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(hbs)-0.5))
 
     # save figure
     pdf.savefig(bbox_inches='tight')

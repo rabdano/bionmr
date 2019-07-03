@@ -1,28 +1,26 @@
 {
     "task_name" : "trace_hydrogen_bonds",
 
-    "cell_a" : 169.8658115,
-    "cell_b" : 169.8658115,
-    "cell_c" : 169.8658115,
-    "alpha_in_degree" : 109.4712190,
-    "beta_in_degree" : 109.4712190,
-    "gamma_in_degree" : 109.4712190,
+    "cell_a" : ___A___,
+    "cell_b" : ___B___,
+    "cell_c" : ___C___,
+    "alpha_in_degree" : ___ALPHA___,
+    "beta_in_degree" :  ___BETA___,
+    "gamma_in_degree" : ___GAMMA___,
 
-    "hb_rcutoff" : 3.5,
-    "hb_angle_tolerance_in_degrees" : 30,
+    "hb_rcutoff" : ___CUT___,
+    "hb_angle_tolerance_in_degrees" : ___ANGLE___,
 
-    "trj_filename_first" : 51,
-    "trj_filename_last" : 300,
+    "trj_filename_first" : ___FIRST_DAT_FILE___,
+    "trj_filename_last" : ___LAST_DAT_FILE___,
     "trj_filename_pattern" : "../../5_run/run%05d.dat",
     "reference_pdb_filename" : "../../5_run/run00001.pdb",
     "volume_data_filename" : "../../5_run/summary.VOLUME",
 
     "start_frame_of_interest" : 0,
     "end_frame_of_interest" : 10000000,
-    "stride" : 10,
+    "stride" : ___STRIDE___,
 
-    "occurrence_to_print" : 0.1,
+    "occurrence_to_print" : 0.05,
     "shell_thickness" : 30.0
 }
-
-
