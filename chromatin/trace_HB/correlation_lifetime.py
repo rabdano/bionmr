@@ -25,6 +25,8 @@ def exp_decay(x, a, tau, c):
 # read data and parameters
 with open(hb_trace, 'r') as f:
     header = f.readline()
+header = header.rstrip('\n').strip()
+hbs = header.split(' ')
 data = np.genfromtxt(hb_trace, skip_header=1).T
 print(data.shape)
 with open('input.json', 'r') as f:
@@ -74,5 +76,9 @@ for i, trace in enumerate(data):
     plt.close()
 sys.stdout.write('\n')
 
-np.savetxt('taus.csv', acf_fit, fmt='%.6f;%.6f', header='tau, ns; S2')
+with open('taus.csv', 'w') as f:
+    f.write('bond;tau, ns; S2\n')
+    for hb, r in zip(hbs, acf_fit):
+        f.write('{};{};{}\n'.format(hb, r[0], r[1]))
+# np.savetxt('taus.csv', acf_fit, fmt='%.6f;%.6f', header='tau, ns; S2')
 np.savetxt('acf.txt', acf.T, fmt='%.6e', header=header)
