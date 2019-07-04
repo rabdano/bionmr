@@ -147,4 +147,4 @@ with open('result.csv', 'w') as f:
                               r[0], r[1]))
         i += 1
 # np.savetxt('taus.csv', acf_fit, fmt='%.6f;%.6f', header='tau, ns; S2')
-np.savetxt('acf.txt', acf.T, fmt='%.6e', header=header)
+# np.savetxt('acf.txt', acf.T, fmt='%.6e', header=header)
