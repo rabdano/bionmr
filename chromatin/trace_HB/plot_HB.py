@@ -133,7 +133,8 @@ to_del = []
 for i, hb in enumerate(hbs):
     if not (hb[0][1] in rid_of_interest) and not (hb[1][1] in rid_of_interest):
         to_del.append(i)
-hbs = [hb for i, hb in enumerate(hbs) if i not in to_del]
+hbs = correct_numbering(hbs)
+hbs = [[hb, i] for i, hb in enumerate(hbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
 
 with PdfPages('HB_figures_H4.pdf') as pdf:
@@ -143,7 +144,6 @@ with PdfPages('HB_figures_H4.pdf') as pdf:
     cur_data = avg_data
 
     # setup ticks and labels
-    hbs = correct_numbering(hbs)
     tcks = ['%s' % hbs[i] for i in range(len(hbs))]
     tcks.reverse()
     plt.yticks(range(len(hbs)), tcks)
