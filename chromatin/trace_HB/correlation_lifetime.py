@@ -124,11 +124,12 @@ for i, trace in enumerate(data):
     acf[i] = trace_acf
 
     plt.figure(figsize=(8, 6))
-    plt.plot(x, y)
+    plt.plot(x, y, label=str(hbs[i]))
     x_fit = np.linspace(np.min(time), np.max(time), 1000)
-    plt.plot(x_fit, exp_decay(x_fit, *popt))
+    plt.plot(x_fit, exp_decay(x_fit, *popt), label=r'$\tau$={:.2f}ns; S$^2$={:.3f}'.format(acf_fit[i, 0], acf_fit[i, 1]))
     plt.xlabel('Time, ps')
     plt.ylabel('Correlation')
+    plt.legend()
     plt.savefig('Figures/{:04d}.png'.format(i), bbox_inches='tight')
     plt.close()
 sys.stdout.write('\n')
