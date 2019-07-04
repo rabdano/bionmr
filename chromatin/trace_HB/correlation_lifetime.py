@@ -22,13 +22,70 @@ def exp_decay(x, a, tau, c):
     return a * np.exp(-x/tau) + c
 
 
+def split_header(header):
+    # THR~3::N--DC~1133::OP1 THR~3::OG1--DC~1133::OP1
+    result = []
+    header = header.rstrip('\n').strip()
+    hbs = header.split(' ')
+    for hb in hbs:
+        donor, acceptor = tuple(hb.split('--'))
+        donor_r = donor.split('::')[0]
+        donor_aName = donor.split('::')[1]
+        donor_rName = donor_r.split('~')[0]
+        donor_rId = int(donor_r.split('~')[1])
+        acceptor_r = acceptor.split('::')[0]
+        acceptor_aName = acceptor.split('::')[1]
+        acceptor_rName = acceptor_r.split('~')[0]
+        acceptor_rId = int(acceptor_r.split('~')[1])
+        result.append([[donor_rName, donor_rId, donor_aName],
+                       [acceptor_rName, acceptor_rId, acceptor_aName]])
+    return result
+
+
+def correct_numbering(hbs, renumber_map=None):
+    if not renumber_map:
+        renumber_map = {'A': [rid for rid in range(1, 136)],
+                        'B': [rid for rid in range(1, 103)],
+                        'C': [rid for rid in range(1, 129)],
+                        'D': [rid for rid in range(1, 123)],
+                        'E': [rid for rid in range(1, 136)],
+                        'F': [rid for rid in range(1, 103)],
+                        'G': [rid for rid in range(1, 129)],
+                        'H': [rid for rid in range(1, 123)],
+                        'I': [rid for rid in range(1, 148)],
+                        'J': [rid for rid in range(1, 148)]}
+
+    absolute_map = {}
+    renumber_array = []
+    last_resid = 0
+
+    for k in sorted(renumber_map):
+        v = renumber_map[k]
+        absolute_map[k] = [rid for rid in range(last_resid + 1, last_resid + len(v) + 1)]
+        renumber_array += v
+        last_resid = len(renumber_array)
+
+    for hb in hbs:
+        i1 = hb[0][1]
+        i2 = hb[1][1]
+        for k, v in absolute_map.items():
+            if i1 in v:
+                hb[0].insert(0, k)
+            if i2 in v:
+                hb[1].insert(0, k)
+        hb[0][2] = renumber_array[hb[0][2] - 1]
+        hb[1][2] = renumber_array[hb[1][2] - 1]
+
+    return hbs
+
+
 # read data and parameters
 with open(hb_trace, 'r') as f:
     header = f.readline()
 header = header.rstrip('\n').strip()
-hbs = header.split(' ')
+hbs = split_header(header)
+hbs = correct_numbering(hbs)
 data = np.genfromtxt(hb_trace, skip_header=1).T
-print(data.shape)
 with open('input.json', 'r') as f:
     pars = json.load(f)
 trj_filename_first = pars['trj_filename_first']
@@ -76,9 +133,18 @@ for i, trace in enumerate(data):
     plt.close()
 sys.stdout.write('\n')
 
-with open('taus.csv', 'w') as f:
-    f.write('bond;tau, ns; S2\n')
+with open('result.csv', 'w') as f:
+    h = 'bond_id;'
+    h += 'donor_chain;donor_resname;donor_resid;donor_atom;'
+    h += 'acceptor_chain;acceptor_resname;acceptor_resid;acceptor_atom;'
+    h += 'tau, ns; S2\n'
+    f.write(h)
+    i = 1
+    fmt = '{:d}; {};{};{:d};{}; {};{};{:d};{}; {:.2f};{:.3f}\n'
     for hb, r in zip(hbs, acf_fit):
-        f.write('{};{};{}\n'.format(hb, r[0], r[1]))
+        f.write(fmt.format(i, hb[0][0], hb[0][1], hb[0][2], hb[0][3],
+                              hb[1][0], hb[1][1], hb[1][2], hb[1][3],
+                              r[0], r[1]))
+        i += 1
 # np.savetxt('taus.csv', acf_fit, fmt='%.6f;%.6f', header='tau, ns; S2')
 np.savetxt('acf.txt', acf.T, fmt='%.6e', header=header)
