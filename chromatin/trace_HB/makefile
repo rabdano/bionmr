@@ -32,7 +32,7 @@ init: | input.json
 plot: | hb_trace.dat
 	python3 plot_HB.py
 
-all: | plot acf.txt
+all: | plot result.csv
 
 
 input.json:
@@ -56,7 +56,7 @@ input.json:
 hb_trace.dat: | input.json
 	xmol_traj trace_hydrogen_bonds --input-config=input.json > hb_trace.dat
 
-acf.txt: | hb_trace.dat
+result.csv: | hb_trace.dat
 	rm -rf Figures
 	mkdir -p Figures
 	python3 correlation_lifetime.py
