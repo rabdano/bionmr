@@ -5,7 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # User input:
 sb_trace = 'sb_trace.dat'  # file with data about hydrogen bonds
-avg_win = 100  # window for averaging of data
+avg_win = 500  # window for averaging of data
 step = 25  # traces per page in figures
 rid_of_interest = list(range(136, 160)) + list(range(623, 647))
 
@@ -58,16 +58,16 @@ def correct_numbering(sbs, renumber_map=None):
         renumber_array += v
         last_resid = len(renumber_array)
 
-    for hb in sbs:
-        i1 = hb[0][1]
-        i2 = hb[1][1]
+    for sb in sbs:
+        i1 = sb[0][1]
+        i2 = sb[1][1]
         for k, v in absolute_map.items():
             if i1 in v:
-                hb[0].insert(0, k)
+                sb[0].insert(0, k)
             if i2 in v:
-                hb[1].insert(0, k)
-        hb[0][2] = renumber_array[hb[0][2] - 1]
-        hb[1][2] = renumber_array[hb[1][2] - 1]
+                sb[1].insert(0, k)
+        sb[0][2] = renumber_array[sb[0][2] - 1]
+        sb[1][2] = renumber_array[sb[1][2] - 1]
 
     return sbs
 
@@ -78,9 +78,9 @@ with open(sb_trace, 'r') as f:
 data = np.genfromtxt(sb_trace, skip_header=1)
 with open('input.json', 'r') as f:
     pars = json.load(f)
-trj_filename_first = pars['trj_filename_first']
-trj_filename_last = pars['trj_filename_last']
-stride = pars['stride']
+trj_filename_first = int(pars['trj_filename_first'])
+trj_filename_last = int(pars['trj_filename_last'])
+stride = int(pars['stride'])
 
 
 # extract header and average data
@@ -107,10 +107,13 @@ with PdfPages('SB_figures.pdf') as pdf:
 
         # plot image
         ax = plt.gca()
-        im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto')
+        im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, step-0.5))
 
         # setup ticks and labels
-        plt.yticks(range(step), ['%s' % sbs[i] for i in range(i1, i2)])
+        tcks = ['%s' % sbs[i] for i in range(i1, i2)]
+        tcks.reverse()
+        plt.yticks(range(step), tcks)
+
         plt.xlabel('Time, ns')
 
         # save figure
@@ -125,7 +128,8 @@ to_del = []
 for i, sb in enumerate(sbs):
     if not (sb[0][1] in rid_of_interest) and not (sb[1][1] in rid_of_interest):
         to_del.append(i)
-sbs = [sb for i, sb in enumerate(sbs) if i not in to_del]
+sbs = correct_numbering(sbs)
+sbs = [[sb, i] for i, sb in enumerate(sbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
 
 with PdfPages('SB_figures_H4.pdf') as pdf:
@@ -135,13 +139,14 @@ with PdfPages('SB_figures_H4.pdf') as pdf:
     cur_data = avg_data
 
     # setup ticks and labels
-    sbs = correct_numbering(sbs)
-    plt.yticks(range(len(sbs)), ['%s' % sbs[i] for i in range(len(sbs))])
+    tcks = ['%s' % sbs[i] for i in range(len(sbs))]
+    tcks.reverse()
+    plt.yticks(range(len(sbs)), tcks)
     plt.xlabel('Time, ns')
 
     # plot image
     ax = plt.gca()
-    im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto')
+    im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(sbs)-0.5))
 
     # save figure
     pdf.savefig(bbox_inches='tight')
