@@ -5,7 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # User input:
 hb_trace = 'hb_trace.dat'  # file with data about hydrogen bonds
-avg_win = 250  # window for averaging of data
+avg_win = 500  # window for averaging of data
 step = 25  # traces per page in figures
 rid_of_interest = list(range(136, 160)) + list(range(623, 647))
 
@@ -115,7 +115,9 @@ with PdfPages('HB_figures.pdf') as pdf:
         im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, step-0.5))
 
         # setup ticks and labels
-        plt.yticks(range(step), ['%s' % hbs[i] for i in range(i1, i2)])
+        tcks = ['%s' % hbs[i] for i in range(i1, i2)]
+        tcks.reverse()
+        plt.yticks(range(step), tcks)
 
         plt.xlabel('Time, ns')
 
@@ -142,7 +144,9 @@ with PdfPages('HB_figures_H4.pdf') as pdf:
 
     # setup ticks and labels
     hbs = correct_numbering(hbs)
-    plt.yticks(range(len(hbs)), ['%s' % hbs[i] for i in range(len(hbs))])
+    tcks = ['%s' % hbs[i] for i in range(len(hbs))]
+    tcks.reverse()
+    plt.yticks(range(len(hbs)), tcks)
     plt.xlabel('Time, ns')
 
     # plot image
