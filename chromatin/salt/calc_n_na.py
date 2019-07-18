@@ -1,4 +1,4 @@
-from subprocess import call
+from subprocess import call, Popen, PIPE
 from glob import glob
 import os
 
@@ -15,7 +15,7 @@ assert len(pdbs) == len(pdbs_unwrapped), 'Different number of pdbs and pdbs_unwr
 
 vmd_script = """set filename %s
 mol new $filename type {pdb} first 0 last -1 step 1 waitfor all
-set sel [atomselect top \"name 'Na+' and within 5 of (nucleic and index 348879 to 358224)\"]
+set sel [atomselect top \"name 'Na+' and within 5 of (nucleic and index %d to %d)\"]
 set n_na [$sel num]
 set fo [open %s a]
 puts $fo "%s $n_na"
@@ -47,7 +47,16 @@ for i, fn in enumerate(pdbs):
     cmd += ['-o', 'x8_' + tmp_file, '-ix', '3', '-iy', '3', '-iz', '3']
     call(cmd)
 
-    script = vmd_script % ('x8_' + tmp_file, n_na_file, os.path.basename(fn))
+    # get indexes for DNA in 14th copy
+    process = Popen(['grep', '"OXT LYS H"', 'x8_' + tmp_file], stdout=PIPE)
+    out, err = process.communicate()
+    lines = out.split('\n')
+    line = lines[13]
+    index1 = int(line.split()[1]) - 1
+    index2 = index1 + 9348
+    print(index1, index2)
+
+    script = vmd_script % ('x8_' + tmp_file, index1, index2, n_na_file, os.path.basename(fn))
     with open(vmd_script_file, 'w') as f:
         f.write(script)
 
