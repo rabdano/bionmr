@@ -48,12 +48,18 @@ for i, fn in enumerate(pdbs):
     call(cmd)
 
     # get indexes for DNA in 14th copy
-    process = Popen(['grep', '"OXT LYS H"', 'x8_' + tmp_file], stdout=PIPE)
+    process = Popen(['grep', "HO5' DA5 I", 'x8_' + tmp_file], stdout=PIPE)
     out, err = process.communicate()
     lines = out.split('\n')
     line = lines[13]
     index1 = int(line.split()[1]) - 1
-    index2 = index1 + 9348
+
+    process = Popen(['grep', "HO3' DT3 J", 'x8_' + tmp_file], stdout=PIPE)
+    out, err = process.communicate()
+    lines = out.split('\n')
+    line = lines[13]
+    index2 = int(line.split()[1]) + 1
+
     print(index1, index2)
 
     script = vmd_script % ('x8_' + tmp_file, index1, index2, n_na_file, os.path.basename(fn))
