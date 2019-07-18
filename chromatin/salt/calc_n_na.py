@@ -50,13 +50,13 @@ for i, fn in enumerate(pdbs):
     # get indexes for DNA in 14th copy
     process = Popen(['grep', "HO5' DA5 I", 'x8_' + tmp_file], stdout=PIPE)
     out, err = process.communicate()
-    lines = out.split('\n')
+    lines = out.decode('UTF-8').split('\n')
     line = lines[13]
     index1 = int(line.split()[1]) - 1
 
     process = Popen(['grep', "HO3' DT3 J", 'x8_' + tmp_file], stdout=PIPE)
     out, err = process.communicate()
-    lines = out.split('\n')
+    lines = out.decode('UTF-8').split('\n')
     line = lines[13]
     index2 = int(line.split()[1]) + 1
 
