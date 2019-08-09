@@ -4,7 +4,7 @@ import numpy as np
 n_exp = ___N_EXP___
 repetitions = ___REP___
 step = 1e-12
-NMR_freq = 500e6
+NMR_freq = 850e6
 tumbling_tau_exp = 185.9e-9 # 176.6 ns was obtained by HYDRONMR for mononucleosome
 fit_out = "autocor_fit_results.txt"
 R1_out = "R1_results.txt"
