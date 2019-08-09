@@ -27,6 +27,7 @@ for i, line in enumerate(lines):
     R1[i] = float(line[:-1].split()[1])
 # print(resids,resnames,R2)
 
+plt.rcParams.update({'font.size': 14})
 plt.figure(figsize=cm2inch(16.0, 12.0))
 
 H4_resids = resids[39:62] - 135
@@ -41,17 +42,21 @@ H4_exp_R1 = np.array([1.26765865, 1.291394278, 1.166972683, 1.213193526, 1.17605
 
 # plot
 fig, ax = plt.subplots()
-ax.plot(H4_resids, H4_R1_1, marker="D", ms=5, markeredgecolor="b", markerfacecolor="b", \
-    linewidth=1.0, color="b", label="H4-1 136-159")
-ax.plot(H4_resids, H4_R1_2, marker="D", ms=5, markeredgecolor="g", markerfacecolor="g", \
-    linewidth=1.0, color="g", label="H4-2 623-646")
-ax.plot(H4_exp_resids, H4_exp_R1, marker="o", ms=5, markeredgecolor="r", markerfacecolor="r",\
-    linestyle='None', label="Experimental")
+ax.plot(H4_resids, H4_R1_1, marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
+        linewidth=2.0, color="b", label="H4-1 [136-159]")
+# ax.plot([], [], marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
+#         linewidth=2.0, color="b", label="H4-1 [136-159]")
+ax.plot(H4_resids, H4_R1_2, marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
+        linewidth=2.0, color="g", label="H4-2 [623-646]")
+# ax.plot([], [], marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
+#         linewidth=2.0, color="g", label="H4-2 [623-646]")
+ax.plot(H4_exp_resids, H4_exp_R1, marker="o", ms=10, markeredgecolor="r", markerfacecolor="r",
+        linestyle='None', label="Experimental")
 
 plt.ylabel(r'${\rm R_{1},\ s^{-1}}$')
-plt.axis([0,26,0,2])
+plt.axis([0, 26, 0, 2])
 plt.xticks(np.arange(1, 25, 1))
-plt.yticks(np.arange(0,2.1,0.1))
+plt.yticks(np.arange(0, 2.1, 0.2))
 n_labels = len(ax.get_xticklabels())
 labels = []
 for i in range(0, n_labels):
@@ -62,7 +67,7 @@ for i in range(0, n_labels):
     labels.append('{}\n{}'.format(dig, H4_seq[i]))
 ax.set_xticklabels(labels)
 # Put a legend above current axis
-ax.legend(loc='lower left', bbox_to_anchor= (0.01, 1.01), ncol=3,
-            borderaxespad=0, frameon=False, numpoints=1)
+ax.legend(loc='lower left', bbox_to_anchor=(0.01, 1.01), ncol=2,
+          borderaxespad=0, frameon=False, numpoints=1)
 plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
 
