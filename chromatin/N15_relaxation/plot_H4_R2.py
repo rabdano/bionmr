@@ -67,7 +67,7 @@ for i in range(0, n_labels):
     labels.append('{}\n{}'.format(dig, H4_seq[i]))
 ax.set_xticklabels(labels)
 # Put a legend above current axis
-ax.legend(loc='lower left', bbox_to_anchor=(0.01, 1.01), ncol=3,
+ax.legend(loc='lower left', bbox_to_anchor=(0.01, 1.01), ncol=2,
           borderaxespad=0, frameon=False, numpoints=1)
 plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
 
