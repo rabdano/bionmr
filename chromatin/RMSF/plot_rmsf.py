@@ -7,6 +7,10 @@ import os
 from matplotlib.backends.backend_pdf import PdfPages
 
 
+plt.rcParams.update({'font.size': 14})
+H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
+
+
 def cm2inch(*tupl):
     inch = 2.54
     if isinstance(tupl[0], tuple):
@@ -30,12 +34,12 @@ for fn, c in zip(files, chains):
     plt.step(range(len(rmsf)), rmsf, where="mid")
 
     plt.ylabel("RMSF, $\AA$")
-    plt.grid(color="#CCCCCC", lw=0.1)
+    # plt.grid(color="#CCCCCC", lw=0.1)
 
 
     def to_label(a):
         from Bio.PDB.Polypeptide import three_to_one
-        if a == 'HID':
+        if (a == 'HID') | (a == 'HIP') | (a == 'HIE'):
             a = 'HIS'
         return "%s" % (three_to_one(a))
 
@@ -43,32 +47,51 @@ for fn, c in zip(files, chains):
                [to_label(a) for a in resnames],
                rotation=0, fontsize="x-small")
 
-    plt.ylim((0,25))
+    plt.ylim((0, 25))
 
     plt.savefig('RMSF_chain_' + c + '.png')
 
 
 
 
-#
-#
-# nve = np.genfromtxt('NVE/cor_NH_n300_s1/' + f)
-# npt_g_2 = np.genfromtxt('NPT_gamma_ln_2/cor_NH_n245_s1/' + f)
-# npt_g_001 = np.genfromtxt('NPT_gamma_ln_0.01/cor_NH_n245_s1/' + f)
-#
-# ax.plot(nve[:,0], nve[:,1], linewidth=0.5, color="k", label="NVE")
-# ax.plot(npt_g_2[:,0], npt_g_2[:,1], linewidth=0.5, color="b", label="NPT_gamma_ln_2")
-# ax.plot(npt_g_001[:,0], npt_g_001[:,1], linewidth=0.5, color="r", label="NPT_gamma_ln_0.01")
-#
-# plt.xlim([-100, 2000])
-# plt.ylim([-0.1, 1.1])
-# plt.xlabel('Time, ps')
-# plt.ylabel('ACF NH')
-#
-# ax.legend(loc='lower left', bbox_to_anchor= (0.0, 1.01), ncol=3,
-#         borderaxespad=0, frameon=False, numpoints=1)
-# plt.grid(True)
-#
-# #         plt.savefig('figures/' + f + '.png')
-# pdf.savefig()
-# plt.close('all')
+plt.figure(figsize=cm2inch(16.0, 12.0))
+fig, ax = plt.subplots()
+
+data1 = np.genfromtxt('RMSF_chain_B.csv', delimiter=',', unpack=True, skip_header=1, dtype=None)
+data2 = np.genfromtxt('RMSF_chain_F.csv', delimiter=',', unpack=True, skip_header=1, dtype=None)
+resids = [d[0] for d in data]
+resnames = [d[1].decode('UTF-8') for d in data]
+rmsf1 = [d[2] for d in data1]
+rmsf2 = [d[2] for d in data2]
+
+plt.step(range(len(rmsf1)), rmsf1, where="mid", color='b', label='H4-1 [136-159]')
+plt.step(range(len(rmsf2)), rmsf2, where="mid", color='g', label='H4-2 [623-646]')
+
+plt.ylabel("RMSF, $\AA$")
+# plt.grid(color="#CCCCCC", lw=0.1)
+
+
+def to_label(a):
+    from Bio.PDB.Polypeptide import three_to_one
+    if (a == 'HID') | (a == 'HIP') | (a == 'HIE'):
+        a = 'HIS'
+    return "%s" % (three_to_one(a))
+
+
+plt.xticks(range(len(rmsf)))
+
+n_labels = len(ax.get_xticklabels())
+labels = []
+for i in range(0, n_labels):
+    if (((i+1) % 5) == 0) | (i == 0):
+        dig = str(i+1)
+    else:
+        dig = ''
+    labels.append('{}\n{}'.format(dig, H4_seq[i]))
+ax.set_xticklabels(labels)
+
+plt.ylim((0,25))
+
+plt.legend()
+
+plt.savefig('RMSF_chain_BF.png', dpi=300, bbox_inches='tight')
