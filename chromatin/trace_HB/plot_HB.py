@@ -5,7 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # User input:
 hb_trace = 'hb_trace.dat'  # file with data about hydrogen bonds
-avg_win = 500  # window for averaging of data
+avg_win = 100  # window for averaging of data
 step = 25  # traces per page in figures
 rid_of_interest = list(range(136, 160)) + list(range(623, 647))
 
