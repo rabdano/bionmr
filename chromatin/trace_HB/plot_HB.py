@@ -136,6 +136,7 @@ for i, hb in enumerate(hbs):
 hbs = correct_numbering(hbs)
 hbs = [[hb, i] for i, hb in enumerate(hbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
+data = np.delete(data, to_del, axis=1)
 
 with PdfPages('HB_figures_H4.pdf') as pdf:
     plt.figure(figsize=(8, 8), dpi=96)
@@ -156,3 +157,108 @@ with PdfPages('HB_figures_H4.pdf') as pdf:
     # save figure
     pdf.savefig(bbox_inches='tight')
     plt.close()
+
+
+
+
+
+# plot traces of interaction partners
+
+# H4-1
+# get unique resids in H4-1 that has HB
+has_hb_1 = sorted(list(set([hb[0][0][2] for hb in hbs if hb[0][0][0] == 'B'])))
+
+# group hb by common interaction partners from H4-1
+hbs_grouped = []
+for resid in has_hb_1:
+    p = [hb[1] for hb in hbs if ((hb[0][0][0] == 'B') & (hb[0][0][2] == resid))]
+    hbs_grouped.append(p)
+
+# get avg_data traces for each group
+traces = []
+for i, resid in enumerate(has_hb_1):
+    idxs = []
+    for j, hb in enumerate(hbs):
+        if hb[1] in hbs_grouped[i]:
+            idxs.append(j)
+    traces.append(avg_data[:, idxs])
+
+# calculate functions for plotting
+fn = []
+for trace, group in zip(traces, hbs_grouped):
+    vals = np.zeros(len(trace), dtype=int)
+    for i, t in enumerate(trace):
+        # fill vals: 0 - no HB; 1 - HB with first partner; 2 - HB with second partner ...
+        if np.sum(t) == 0.0:
+            vals[i] = 0
+            continue
+        for j, s in enumerate(t):
+            if s > 0.5:
+                vals[i] = j + 1
+                # what if hb is formed simultaneously to two partners? Take first only since it is a rare case
+                continue
+    fn.append(vals)
+
+# plot traces
+x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
+with PdfPages('HB_figures_H4_traces_H4-1.pdf') as pdf:
+    for i, y in enumerate(fn):
+        plt.figure(figsize=(10, 1))
+        plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
+        plt.xlabel('Time, ns')
+        vals = range(max(y) + 1)
+        plt.yticks(vals, ['no HB'] + [str(hb) for hb in hbs if hb[1] in hbs_grouped[i]])
+        pdf.savefig(bbox_inches='tight')
+        plt.close()
+
+
+
+
+
+
+# H4-2
+# get unique resids in H4-2 that has HB
+has_hb_2 = sorted(list(set([hb[0][0][2] for hb in hbs if hb[0][0][0] == 'F'])))
+
+# group hb by common interaction partners from H4-1
+hbs_grouped = []
+for resid in has_hb_2:
+    p = [hb[1] for hb in hbs if ((hb[0][0][0] == 'F') & (hb[0][0][2] == resid))]
+    hbs_grouped.append(p)
+
+# get avg_data traces for each group
+traces = []
+for i, resid in enumerate(has_hb_2):
+    idxs = []
+    for j, hb in enumerate(hbs):
+        if hb[1] in hbs_grouped[i]:
+            idxs.append(j)
+    traces.append(avg_data[:, idxs])
+
+# calculate functions for plotting
+fn = []
+for trace, group in zip(traces, hbs_grouped):
+    vals = np.zeros(len(trace), dtype=int)
+    for i, t in enumerate(trace):
+        # fill vals: 0 - no HB; 1 - HB with first partner; 2 - HB with second partner ...
+        if np.sum(t) == 0.0:
+            vals[i] = 0
+            continue
+        for j, s in enumerate(t):
+            if s > 0.5:
+                vals[i] = j + 1
+                # what if hb is formed simultaneously to two partners? Take first only since it is a rare case
+                continue
+    fn.append(vals)
+
+# plot traces
+x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
+with PdfPages('HB_figures_H4_traces_H4-2.pdf') as pdf:
+    for i, y in enumerate(fn):
+        plt.figure(figsize=(10, 1))
+        plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
+        plt.xlabel('Time, ns')
+        vals = range(max(y) + 1)
+        plt.yticks(vals, ['no HB'] + [str(hb) for hb in hbs if hb[1] in hbs_grouped[i]])
+        pdf.savefig(bbox_inches='tight')
+        plt.close()
