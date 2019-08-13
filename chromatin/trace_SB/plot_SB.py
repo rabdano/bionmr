@@ -5,7 +5,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # User input:
 sb_trace = 'sb_trace.dat'  # file with data about hydrogen bonds
-avg_win = 500  # window for averaging of data
+avg_win = 100  # window for averaging of data
 step = 25  # traces per page in figures
 rid_of_interest = list(range(136, 160)) + list(range(623, 647))
 
@@ -131,6 +131,7 @@ for i, sb in enumerate(sbs):
 sbs = correct_numbering(sbs)
 sbs = [[sb, i] for i, sb in enumerate(sbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
+data = np.delete(data, to_del, axis=1)
 
 with PdfPages('SB_figures_H4.pdf') as pdf:
     plt.figure(figsize=(8, 8), dpi=96)
@@ -151,3 +152,107 @@ with PdfPages('SB_figures_H4.pdf') as pdf:
     # save figure
     pdf.savefig(bbox_inches='tight')
     plt.close()
+
+
+
+
+
+# plot traces of interaction partners
+# H4-1
+# get unique resids in H4-1 that has SB
+has_sb_1 = sorted(list(set([sb[0][0][2] for sb in sbs if sb[0][0][0] == 'B'])))
+
+# group sb by common interaction partners from H4-1
+sbs_grouped = []
+for resid in has_sb_1:
+    p = [sb[1] for sb in sbs if ((sb[0][0][0] == 'B') & (sb[0][0][2] == resid))]
+    sbs_grouped.append(p)
+
+# get avg_data traces for each group
+traces = []
+for i, resid in enumerate(has_sb_1):
+    idxs = []
+    for j, sb in enumerate(sbs):
+        if sb[1] in sbs_grouped[i]:
+            idxs.append(j)
+    traces.append(avg_data[:, idxs])
+
+# calculate functions for plotting
+fn = []
+for trace, group in zip(traces, sbs_grouped):
+    vals = np.zeros(len(trace), dtype=int)
+    for i, t in enumerate(trace):
+        # fill vals: 0 - no SB; 1 - SB with first partner; 2 - SB with second partner ...
+        if np.sum(t) == 0.0:
+            vals[i] = 0
+            continue
+        for j, s in enumerate(t):
+            if s > 0.5:
+                vals[i] = j + 1
+                # what if sb is formed simultaneously to two partners? Take first only since it is a rare case
+                continue
+    fn.append(vals)
+
+# plot traces
+x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
+with PdfPages('SB_figures_H4_traces_H4-1.pdf') as pdf:
+    for i, y in enumerate(fn):
+        plt.figure(figsize=(10, 1))
+        plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
+        plt.xlabel('Time, ns')
+        vals = range(max(y) + 1)
+        plt.yticks(vals, ['no SB'] + [str(sb) for sb in sbs if sb[1] in sbs_grouped[i]])
+        pdf.savefig(bbox_inches='tight')
+        plt.close()
+
+
+
+
+
+
+# H4-2
+# get unique resids in H4-2 that has SB
+has_sb_2 = sorted(list(set([sb[0][0][2] for sb in sbs if sb[0][0][0] == 'F'])))
+
+# group sb by common interaction partners from H4-1
+sbs_grouped = []
+for resid in has_sb_2:
+    p = [sb[1] for sb in sbs if ((sb[0][0][0] == 'F') & (sb[0][0][2] == resid))]
+    sbs_grouped.append(p)
+
+# get avg_data traces for each group
+traces = []
+for i, resid in enumerate(has_sb_2):
+    idxs = []
+    for j, sb in enumerate(sbs):
+        if sb[1] in sbs_grouped[i]:
+            idxs.append(j)
+    traces.append(avg_data[:, idxs])
+
+# calculate functions for plotting
+fn = []
+for trace, group in zip(traces, sbs_grouped):
+    vals = np.zeros(len(trace), dtype=int)
+    for i, t in enumerate(trace):
+        # fill vals: 0 - no SB; 1 - SB with first partner; 2 - SB with second partner ...
+        if np.sum(t) == 0.0:
+            vals[i] = 0
+            continue
+        for j, s in enumerate(t):
+            if s > 0.5:
+                vals[i] = j + 1
+                # what if sb is formed simultaneously to two partners? Take first only since it is a rare case
+                continue
+    fn.append(vals)
+
+# plot traces
+x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
+with PdfPages('SB_figures_H4_traces_H4-2.pdf') as pdf:
+    for i, y in enumerate(fn):
+        plt.figure(figsize=(10, 1))
+        plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
+        plt.xlabel('Time, ns')
+        vals = range(max(y) + 1)
+        plt.yticks(vals, ['no SB'] + [str(sb) for sb in sbs if sb[1] in sbs_grouped[i]])
+        pdf.savefig(bbox_inches='tight')
+        plt.close()
