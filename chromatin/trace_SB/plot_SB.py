@@ -1,3 +1,5 @@
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import json
@@ -5,9 +7,12 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 # User input:
 sb_trace = 'sb_trace.dat'  # file with data about hydrogen bonds
-avg_win = 100  # window for averaging of data
+avg_win = 500  # window for averaging of data
 step = 25  # traces per page in figures
-rid_of_interest = list(range(136, 160)) + list(range(623, 647))
+h4_1 = list(range(136, 160))
+h4_2 = list(range(623, 647))
+rid_of_interest = h4_1 + h4_2
+H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
 
 def split_header(header):
     result = []
@@ -133,28 +138,92 @@ sbs = [[sb, i] for i, sb in enumerate(sbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
 data = np.delete(data, to_del, axis=1)
 
-with PdfPages('SB_figures_H4.pdf') as pdf:
-    plt.figure(figsize=(8, 8), dpi=96)
+
+sbs_1 = [sb for sb in sbs if ((sb[0][0][0] == 'B') | (sb[0][1][0] == 'B'))]
+sbs_2 = [sb for sb in sbs if ((sb[0][0][0] == 'F') | (sb[0][1][0] == 'F'))]
+avg_data_1 = avg_data[:, :len(sbs_1)]
+avg_data_2 = avg_data[:, len(sbs_1):]
+
+h4_1_cur = [s[0][0][2] for s in sbs_1]
+h4_2_cur = [s[0][0][2] for s in sbs_2]
+
+
+# H4-1
+labels_1 = []
+h4_1_traces = []
+counter = 0
+for resid in range(1, len(h4_1)+1):
+    resname = H4_seq[resid-1]
+    if resid in h4_1_cur:
+        for sb in sbs_1:
+            if sb[0][0][2] == resid:
+                labels_1.append(resname + '-{} '.format(resid) + '({})'.format(sb[0][0][0]) +
+                                ' - {}'.format(sb[0][1][1]) + '-{}'.format(sb[0][1][2]) + ' ({})'.format(sb[0][1][0]))
+                h4_1_traces.append(avg_data_1[:, counter])
+                counter += 1
+    else:
+        labels_1.append('{}-{} ({})'.format(resname, resid, 'B'))
+        h4_1_traces.append(np.zeros(avg_data_1[:, 0].shape))
+
+with PdfPages('SB_figures_H4-1.pdf') as pdf:
+    fig, ax = plt.subplots(figsize=(8, 8), dpi=96)
 
     # get data
-    cur_data = avg_data
+    cur_data = np.array(h4_1_traces)
 
     # setup ticks and labels
-    tcks = ['%s' % sbs[i] for i in range(len(sbs))]
+    tcks = labels_1
     tcks.reverse()
-    plt.yticks(range(len(sbs)), tcks)
+    plt.yticks(range(len(labels_1)), tcks)
+    ax.yaxis.tick_right()
     plt.xlabel('Time, ns')
 
     # plot image
     ax = plt.gca()
-    im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(sbs)-0.5))
+    im = ax.imshow(cur_data, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(labels_1)-0.5))
 
     # save figure
     pdf.savefig(bbox_inches='tight')
     plt.close()
 
 
+# H4-2
+labels_2 = []
+h4_2_traces = []
+counter = 0
+for resid in range(1, len(h4_2)+1):
+    resname = H4_seq[resid-1]
+    if resid in h4_2_cur:
+        for sb in sbs_2:
+            if sb[0][0][2] == resid:
+                labels_2.append(resname + '-{} '.format(resid) + '({})'.format(sb[0][0][0]) +
+                                ' - {}'.format(sb[0][1][1]) + '-{}'.format(sb[0][1][2]) + ' ({})'.format(sb[0][1][0]))
+                h4_2_traces.append(avg_data_2[:, counter])
+                counter += 1
+    else:
+        labels_2.append('{}-{} ({})'.format(resname, resid, 'F'))
+        h4_2_traces.append(np.zeros(avg_data_2[:, 0].shape))
 
+with PdfPages('SB_figures_H4-2.pdf') as pdf:
+    fig, ax = plt.subplots(figsize=(8, 8), dpi=96)
+
+    # get data
+    cur_data = np.array(h4_2_traces)
+
+    # setup ticks and labels
+    tcks = labels_2
+    tcks.reverse()
+    plt.yticks(range(len(labels_2)), tcks)
+    ax.yaxis.tick_right()
+    plt.xlabel('Time, ns')
+
+    # plot image
+    ax = plt.gca()
+    im = ax.imshow(cur_data, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(labels_2)-0.5))
+
+    # save figure
+    pdf.savefig(bbox_inches='tight')
+    plt.close()
 
 
 # plot traces of interaction partners
