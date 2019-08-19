@@ -143,6 +143,16 @@ hbs = [[hb, i] for i, hb in enumerate(hbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
 data = np.delete(data, to_del, axis=1)
 
+# prune non protein-DNA HB data
+to_del = []
+for i, hb in enumerate([h[0] for h in hbs]):
+    if not (((hb[0][0] in ['B', 'F']) and (hb[1][0] in ['I', 'J'])) or
+            ((hb[0][0] in ['I', 'J']) and (hb[1][0] in ['B', 'F']))):
+        to_del.append(i)
+hbs = [[hb, i] for i, hb in enumerate([h[0] for h in hbs]) if i not in to_del]
+hb_avg_data = np.delete(avg_data, to_del, axis=1)
+hb_data = np.delete(data, to_del, axis=1)
+
 
 hbs_1 = [hb for hb in hbs if ((hb[0][0][0] == 'B') | (hb[0][1][0] == 'B'))]
 hbs_2 = [hb for hb in hbs if ((hb[0][0][0] == 'F') | (hb[0][1][0] == 'F'))]
