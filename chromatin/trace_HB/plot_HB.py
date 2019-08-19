@@ -1,3 +1,5 @@
+import matplotlib as mpl
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import json
@@ -7,7 +9,10 @@ from matplotlib.backends.backend_pdf import PdfPages
 hb_trace = 'hb_trace.dat'  # file with data about hydrogen bonds
 avg_win = 100  # window for averaging of data
 step = 25  # traces per page in figures
-rid_of_interest = list(range(136, 160)) + list(range(623, 647))
+h4_1 = list(range(136, 160))
+h4_2 = list(range(623, 647))
+rid_of_interest = h4_1 + h4_2
+H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
 
 def split_header(header):
     # THR~3::N--DC~1133::OP1 THR~3::OG1--DC~1133::OP1
@@ -138,25 +143,96 @@ hbs = [[hb, i] for i, hb in enumerate(hbs) if i not in to_del]
 avg_data = np.delete(avg_data, to_del, axis=1)
 data = np.delete(data, to_del, axis=1)
 
-with PdfPages('HB_figures_H4.pdf') as pdf:
-    plt.figure(figsize=(8, 8), dpi=96)
 
-    # get data
-    cur_data = avg_data
+hbs_1 = [hb for hb in hbs if ((hb[0][0][0] == 'B') | (hb[0][1][0] == 'B'))]
+hbs_2 = [hb for hb in hbs if ((hb[0][0][0] == 'F') | (hb[0][1][0] == 'F'))]
+avg_data_1 = avg_data[:, :len(hbs_1)]
+avg_data_2 = avg_data[:, len(hbs_1):]
 
-    # setup ticks and labels
-    tcks = ['%s' % hbs[i] for i in range(len(hbs))]
-    tcks.reverse()
-    plt.yticks(range(len(hbs)), tcks)
-    plt.xlabel('Time, ns')
+h4_1_cur = [s[0][0][2] for s in hbs_1]
+h4_2_cur = [s[0][0][2] for s in hbs_2]
 
-    # plot image
-    ax = plt.gca()
-    im = ax.imshow(cur_data.T, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(hbs)-0.5))
 
-    # save figure
-    pdf.savefig(bbox_inches='tight')
-    plt.close()
+# H4-1
+if len(hbs_1) > 0:
+    labels_1 = []
+    h4_1_traces = []
+    counter = 0
+    for resid in range(1, len(h4_1)+1):
+        resname = H4_seq[resid-1]
+        if resid in h4_1_cur:
+            for hb in hbs_1:
+                if hb[0][0][2] == resid:
+                    labels_1.append(resname + '-{}-{} '.format(resid, hb[0][0][3]) + '({})'.format(hb[0][0][0]) +
+                                    ' - {}'.format(hb[0][1][1]) + '-{}-{}'.format(hb[0][1][2], hb[0][1][3]) +
+                                    ' ({})'.format(hb[0][1][0]))
+                    h4_1_traces.append(avg_data_1[:, counter])
+                    counter += 1
+        else:
+            labels_1.append('{}-{} ({})'.format(resname, resid, 'B'))
+            h4_1_traces.append(np.zeros(avg_data_1[:, 0].shape))
+
+    with PdfPages('HB_figures_H4-1.pdf') as pdf:
+        fig, ax = plt.subplots(figsize=(8, 8), dpi=96)
+
+        # get data
+        cur_data = np.array(h4_1_traces)
+
+        # setup ticks and labels
+        tcks = labels_1
+        tcks.reverse()
+        plt.yticks(range(len(labels_1)), tcks)
+        ax.yaxis.tick_right()
+        plt.xlabel('Time, ns')
+
+        # plot image
+        ax = plt.gca()
+        im = ax.imshow(cur_data, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(labels_1)-0.5))
+
+        # save figure
+        pdf.savefig(bbox_inches='tight')
+        plt.close()
+
+
+# H4-2
+if len(hbs_2) > 0:
+    labels_2 = []
+    h4_2_traces = []
+    counter = 0
+    for resid in range(1, len(h4_2)+1):
+        resname = H4_seq[resid-1]
+        if resid in h4_2_cur:
+            for hb in hbs_2:
+                if hb[0][0][2] == resid:
+                    labels_2.append(resname + '-{}-{} '.format(resid, hb[0][0][3]) + '({})'.format(hb[0][0][0]) +
+                                    ' - {}'.format(hb[0][1][1]) + '-{}-{}'.format(hb[0][1][2], hb[0][1][3]) +
+                                    ' ({})'.format(hb[0][1][0]))
+                    h4_2_traces.append(avg_data_2[:, counter])
+                    counter += 1
+        else:
+            labels_2.append('{}-{} ({})'.format(resname, resid, 'F'))
+            h4_2_traces.append(np.zeros(avg_data_2[:, 0].shape))
+
+    with PdfPages('HB_figures_H4-2.pdf') as pdf:
+        fig, ax = plt.subplots(figsize=(8, 8), dpi=96)
+
+        # get data
+        cur_data = np.array(h4_2_traces)
+
+        # setup ticks and labels
+        tcks = labels_2
+        tcks.reverse()
+        plt.yticks(range(len(labels_2)), tcks)
+        ax.yaxis.tick_right()
+        plt.xlabel('Time, ns')
+
+        # plot image
+        ax = plt.gca()
+        im = ax.imshow(cur_data, cmap=cmap, aspect='auto', extent=(trj_filename_first-1, trj_filename_last, -0.5, len(labels_2)-0.5))
+
+        # save figure
+        pdf.savefig(bbox_inches='tight')
+        plt.close()
 
 
 
@@ -200,16 +276,17 @@ for trace, group in zip(traces, hbs_grouped):
     fn.append(vals)
 
 # plot traces
-x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
-with PdfPages('HB_figures_H4_traces_H4-1.pdf') as pdf:
-    for i, y in enumerate(fn):
-        plt.figure(figsize=(10, 1))
-        plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
-        plt.xlabel('Time, ns')
-        vals = range(max(y) + 1)
-        plt.yticks(vals, ['no HB'] + [str(hb) for hb in hbs if hb[1] in hbs_grouped[i]])
-        pdf.savefig(bbox_inches='tight')
-        plt.close()
+if len(fn) > 0:
+    x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
+    with PdfPages('HB_figures_H4_traces_H4-1.pdf') as pdf:
+        for i, y in enumerate(fn):
+            plt.figure(figsize=(10, 1))
+            plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
+            plt.xlabel('Time, ns')
+            vals = range(max(y) + 1)
+            plt.yticks(vals, ['no HB'] + [str(hb) for hb in hbs if hb[1] in hbs_grouped[i]])
+            pdf.savefig(bbox_inches='tight')
+            plt.close()
 
 
 
@@ -252,13 +329,14 @@ for trace, group in zip(traces, hbs_grouped):
     fn.append(vals)
 
 # plot traces
-x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
-with PdfPages('HB_figures_H4_traces_H4-2.pdf') as pdf:
-    for i, y in enumerate(fn):
-        plt.figure(figsize=(10, 1))
-        plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
-        plt.xlabel('Time, ns')
-        vals = range(max(y) + 1)
-        plt.yticks(vals, ['no HB'] + [str(hb) for hb in hbs if hb[1] in hbs_grouped[i]])
-        pdf.savefig(bbox_inches='tight')
-        plt.close()
+if len(fn) > 0:
+    x = np.linspace(trj_filename_first, trj_filename_last, len(fn[0]))
+    with PdfPages('HB_figures_H4_traces_H4-2.pdf') as pdf:
+        for i, y in enumerate(fn):
+            plt.figure(figsize=(10, 1))
+            plt.scatter(x, y, marker='o', linewidths=0, alpha=0.7)
+            plt.xlabel('Time, ns')
+            vals = range(max(y) + 1)
+            plt.yticks(vals, ['no HB'] + [str(hb) for hb in hbs if hb[1] in hbs_grouped[i]])
+            pdf.savefig(bbox_inches='tight')
+            plt.close()
