@@ -26,7 +26,7 @@ print("Using run%05d.dat - run%05d.dat" % (first_dat_file, last_dat_file))
 
 # create predicates
 rid_ca_1 = rId.is_in(residues_of_interest_1) & (aName == "CA")
-rid_ca_2 = rId.is_in(residues_of_interest_1) & (aName == "CA")
+rid_ca_2 = rId.is_in(residues_of_interest_2) & (aName == "CA")
 
 # create vatiables for accumulation of data
 n_residues = len(residues_of_interest_1)
