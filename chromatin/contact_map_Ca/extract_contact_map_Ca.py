@@ -6,7 +6,7 @@ import sys
 # setup parameters.
 path_to_traj = "../.."
 first_dat_file = 51
-last_dat_file = 600
+last_dat_file = 800
 stride = 100
 fout_1 = 'H4-1_contact_map_Ca.txt'
 fout_2 = 'H4-2_contact_map_Ca.txt'
@@ -36,7 +36,7 @@ h4_2_map = np.zeros((n_residues, n_residues))
 # run through trajectory and calculate vectors
 print("Processing frames...")
 for frame in traj[::stride]:
-    sys.stdout.write("Frame %d of %d\r" % ((frame.index+1)/stride, traj.size/stride))
+    sys.stdout.write("Frame %d of %d\r" % (frame.index/stride + 1, traj.size/stride))
     if frame.index == 0:
         h4_1_ca = frame.asAtoms.filter(rid_ca_1)
         h4_2_ca = frame.asAtoms.filter(rid_ca_2)

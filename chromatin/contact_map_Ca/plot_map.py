@@ -30,15 +30,15 @@ x_labels = []
 y_labels = []
 for i in range(0, n_labels):
     if (((i+1) % 5) == 0) | (i == 0):
-        dig = str(i+1) + ' '
+        dig = str(i+1)
     else:
         dig = ''
     x_labels.append('{}\n{}'.format(dig, H4_seq[i]))
-    y_labels.append('{}{}'.format(dig, H4_seq[i]))
+    y_labels.append('{} {}'.format(dig, H4_seq[i]))
 y_labels.reverse()
 
-ax.set_xticklabels(x_labels)
-ax.set_yticklabels(y_labels)
+ax.set_xticklabels(x_labels, ha='center', multialignment='center')
+ax.set_yticklabels(y_labels, ha='right', multialignment='right')
 
 divider = make_axes_locatable(ax)
 cax = divider.append_axes("right", size="5%", pad=0.05)
@@ -62,15 +62,15 @@ x_labels = []
 y_labels = []
 for i in range(0, n_labels):
     if (((i+1) % 5) == 0) | (i == 0):
-        dig = str(i+1) + ' '
+        dig = str(i+1)
     else:
         dig = ''
     x_labels.append('{}\n{}'.format(dig, H4_seq[i]))
-    y_labels.append('{}{}'.format(dig, H4_seq[i]))
+    y_labels.append('{} {}'.format(dig, H4_seq[i]))
 y_labels.reverse()
 
-ax.set_xticklabels(x_labels)
-ax.set_yticklabels(y_labels)
+ax.set_xticklabels(x_labels, ha='center', multialignment='center')
+ax.set_yticklabels(y_labels, ha='right', multialignment='right')
 
 divider = make_axes_locatable(ax)
 cax = divider.append_axes("right", size="5%", pad=0.05)
