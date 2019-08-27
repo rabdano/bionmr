@@ -5,6 +5,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import numpy as np
 
 H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
+max_cbar = 50
 
 with open('extract_contact_map_Ca.py', 'r') as f:
     for line in f:
@@ -19,9 +20,9 @@ h4_map_2 = np.flip(np.loadtxt(h4_map_2_fn), axis=0)
 n_residues = len(h4_map_1)
 
 fig, ax = plt.subplots(figsize=(8, 8))
-cmap = plt.get_cmap('jet', np.ceil(np.max(np.max(h4_map_1))/5))
+cmap = plt.get_cmap('jet', max_cbar//5)
 
-im = ax.imshow(h4_map_1, cmap=cmap, aspect='equal', vmin=0.0, vmax=5.0*np.ceil(np.max(np.max(h4_map_1))/5))
+im = ax.imshow(h4_map_1, cmap=cmap, aspect='equal', vmin=0.0, vmax=5.0*(max_cbar//5))
 
 plt.xticks(range(n_residues))
 plt.yticks(range(n_residues))
@@ -51,9 +52,9 @@ plt.close(fig)
 
 
 fig, ax = plt.subplots(figsize=(8, 8))
-cmap = plt.get_cmap('jet', np.ceil(np.max(np.max(h4_map_2))/5))
+cmap = plt.get_cmap('jet', max_cbar//5)
 
-im = ax.imshow(h4_map_2, cmap=cmap, aspect='equal', vmin=0.0, vmax=5.0*np.ceil(np.max(np.max(h4_map_1))/5))
+im = ax.imshow(h4_map_2, cmap=cmap, aspect='equal', vmin=0.0, vmax=5.0*(max_cbar//5))
 
 plt.xticks(range(n_residues))
 plt.yticks(range(n_residues))
