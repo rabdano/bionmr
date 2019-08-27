@@ -5,8 +5,8 @@ import sys
 
 # setup parameters.
 path_to_traj = "../.."
-first_dat_file = 1
-last_dat_file = 10
+first_dat_file = 51
+last_dat_file = 600
 stride = 100
 fout_1 = 'H4-1_contact_map_Ca.txt'
 fout_2 = 'H4-2_contact_map_Ca.txt'

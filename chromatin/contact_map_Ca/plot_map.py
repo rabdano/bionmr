@@ -10,7 +10,7 @@ with open('extract_contact_map_Ca.py', 'r') as f:
     for line in f:
         if 'fout_1' in line:
             h4_map_1_fn = line.split("'")[-2]
-        if 'fout_1' in line:
+        if 'fout_2' in line:
             h4_map_2_fn = line.split("'")[-2]
             break
 
