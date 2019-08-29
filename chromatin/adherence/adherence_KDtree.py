@@ -75,7 +75,7 @@ for frame in tqdm(traj[::stride]):
             if dist < min_dist:
                 min_dist = dist
         f_1.write('{:.2f},'.format(min_dist[0]))
-        min_dists_1[i, int(frame.index / stride)] = min_dist[0]
+        min_dists_2[i, int(frame.index / stride)] = min_dist[0]
     f_1.write('\n')
 
 f_1.close()
