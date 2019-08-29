@@ -39,8 +39,8 @@ min_dists_1 = np.zeros((len(residues_of_interest_1), int(traj.size / stride)))
 min_dists_2 = np.zeros((len(residues_of_interest_2), int(traj.size / stride)))
 
 # create predicates
-h4_1_ca_pred = rId.is_in(residues_of_interest_1) & (aName == 'CA')
-h4_2_ca_pred = rId.is_in(residues_of_interest_2) & (aName == 'CA')
+h4_1_ca_pred = rId.is_in(residues_of_interest_1)
+h4_2_ca_pred = rId.is_in(residues_of_interest_2)
 
 nucleosome_core_pred = ~ (rId.is_in(residues_of_interest_1) | rId.is_in(residues_of_interest_2))
 heavy = lambda a: not (a.name.str[0] == 'H')
@@ -49,27 +49,34 @@ heavy = lambda a: not (a.name.str[0] == 'H')
 print("Processing frames...")
 for frame in tqdm(traj[::stride]):
     if frame.index == 0:
-        Ca_1 = frame.asAtoms.filter(h4_1_ca_pred)
-        Ca_2 = frame.asAtoms.filter(h4_2_ca_pred)
+        h4_1 = frame.asResidues.filter(h4_1_ca_pred)
+        h4_2 = frame.asResidues.filter(h4_2_ca_pred)
         nucleosome_core = frame.asAtoms.filter(heavy).filter(nucleosome_core_pred)
 
-    coords_Ca_1 = Ca_1.toCoords
-    coords_Ca_2 = Ca_2.toCoords
     coords_nucleosome_core = nucleosome_core.toCoords
-
     tree_nucleosome_core = spatial.cKDTree(coords_nucleosome_core.to_numpy())
 
-    for i, Ca in enumerate(Ca_1):
-        min_dist, idx = tree_nucleosome_core.query([[Ca.r.x, Ca.r.y, Ca.r.z]], k=1, eps=1e-5)
+    for i, residue in enumerate(h4_1):
+        min_dist = 1000.0
+        for at in residue.asAtoms.filter(heavy):
+            point = [at.r.x, at.r.y, at.r.z]
+            dist, idx = tree_nucleosome_core.query([point], k=1, eps=1e-5)
+            if dist < min_dist:
+                min_dist = dist
         f_1.write('{:.2f},'.format(min_dist[0]))
         min_dists_1[i, int(frame.index / stride)] = min_dist[0]
     f_1.write('\n')
 
-    for i, Ca in enumerate(Ca_2):
-        min_dist, idx = tree_nucleosome_core.query([[Ca.r.x, Ca.r.y, Ca.r.z]], k=1, eps=1e-5)
-        f_2.write('{:.2f},'.format(min_dist[0]))
-        min_dists_2[i, int(frame.index / stride)] = min_dist[0]
-    f_2.write('\n')
+    for i, residue in enumerate(h4_2):
+        min_dist = 1000.0
+        for at in residue.asAtoms.filter(heavy):
+            point = [at.r.x, at.r.y, at.r.z]
+            dist, idx = tree_nucleosome_core.query([point], k=1, eps=1e-5)
+            if dist < min_dist:
+                min_dist = dist
+        f_1.write('{:.2f},'.format(min_dist[0]))
+        min_dists_1[i, int(frame.index / stride)] = min_dist[0]
+    f_1.write('\n')
 
 f_1.close()
 f_2.close()
