@@ -103,9 +103,9 @@ for i, l in enumerate(labels):
 
     fig, ax = plt.subplots()
     ax.plot(H4_resids, cs[:24, i], marker="D", ms=5, markeredgecolor="b", markerfacecolor="b",
-            linewidth=1.0, color="b", label="H4-1 136-159")
+            linewidth=1.0, color="b", label="H4-1 [136-159]")
     ax.plot(H4_resids, cs[102:102 + 24, i], marker="D", ms=5, markeredgecolor="g", markerfacecolor="g",
-            linewidth=1.0, color="g", label="H4-2 623-646")
+            linewidth=1.0, color="g", label="H4-2 [623-646]")
     ax.plot(H4_exp_resids, H4_exp_cs[:, i], marker="o", ms=5, markeredgecolor="r", markerfacecolor="r",
             linestyle='None', label="Experimental")
     ax.plot(H4_resids, rc_cs[:24, i], marker="_", ms=5, markeredgecolor="k", markerfacecolor="k",
