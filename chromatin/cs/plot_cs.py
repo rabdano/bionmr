@@ -75,8 +75,8 @@ H4_resids = list(range(1, 25))
 d_mins = [6.5, 100, 40, 10]
 d_maxs = [10, 135, 70, 70]
 d_step = [0.5, 5.0, 5.0, 5.0]
-d_mins_diff = [-1, -5, -3, -5]
-d_maxs_diff = [1, 5, 3, 5]
+d_mins_diff = [-1, -5, -3, -3]
+d_maxs_diff = [1, 5, 3, 3]
 d_step_diff = [0.2, 1.0, 1.0, 1.0]
 
 # Plot
