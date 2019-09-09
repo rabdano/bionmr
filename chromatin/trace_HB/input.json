@@ -11,13 +11,13 @@
     "hb_rcutoff" : ___CUT___,
     "hb_angle_tolerance_in_degrees" : ___ANGLE___,
 
-    "trj_filename_first" : ___FIRST_DAT_FILE___,
+    "trj_filename_first" : 1,
     "trj_filename_last" : ___LAST_DAT_FILE___,
     "trj_filename_pattern" : "../../5_run/run%05d.dat",
     "reference_pdb_filename" : "../../5_run/run00001.pdb",
     "volume_data_filename" : "../../5_run/summary.VOLUME",
 
-    "start_frame_of_interest" : 0,
+    "start_frame_of_interest" : ___FIRST_FRAME___,
     "end_frame_of_interest" : 10000000,
     "stride" : ___STRIDE___,
 
