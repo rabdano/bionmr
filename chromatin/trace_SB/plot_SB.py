@@ -83,8 +83,8 @@ with open(sb_trace, 'r') as f:
 data = np.genfromtxt(sb_trace, skip_header=1)
 with open('input.json', 'r') as f:
     pars = json.load(f)
-trj_filename_first = int(pars['trj_filename_first'])
-trj_filename_last = int(pars['trj_filename_last'])
+trj_filename_first = max(int(pars['trj_filename_first']), int(pars['start_frame_of_interest']/1000)+1)
+trj_filename_last = min(int(pars['trj_filename_last']), int(pars['end_frame_of_interest']/1000+1))
 stride = int(pars['stride'])
 
 
