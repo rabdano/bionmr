@@ -37,6 +37,7 @@ input.json:
 	cp ${SCRIPTS_PATH}/input.json .
 	cp ${SCRIPTS_PATH}/plot_SB.py .
 	cp ${SCRIPTS_PATH}/correlation_lifetime.py .
+	cp ${SCRIPTS_PATH}/../wrap/get_summary.VOLUME.sh ../../5_run/get_summary.VOLUME.sh
 
 	sed -i 's/___FIRST_FRAME___/${FIRST_FRAME}/g' input.json
 	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' input.json
@@ -49,6 +50,7 @@ input.json:
 	sed -i 's/___GAMMA___/${GAMMA}/g' input.json
 
 sb_trace.dat: | input.json
+	cd ../../5_run; bash get_summary.VOLUME.sh
 	xmol_traj trace_salt_bridges --input-config=input.json > sb_trace.dat
 
 result.csv: | sb_trace.dat
