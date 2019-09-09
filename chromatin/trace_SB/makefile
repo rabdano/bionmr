@@ -2,6 +2,8 @@ FIRST_DAT_FILE=51
 LAST_DAT_FILE=300
 STRIDE=10
 
+FIRST_FRAME=$(shell echo $$(( ($(FIRST_DAT_FILE)-1)*1000 )) )
+
 A=$(shell tail -n 1 ../../1_build/box.inpcrd | cut -d " " -f 2)
 B=$(shell tail -n 1 ../../1_build/box.inpcrd | cut -d " " -f 3)
 C=$(shell tail -n 1 ../../1_build/box.inpcrd | cut -d " " -f 4)
@@ -36,7 +38,7 @@ input.json:
 	cp ${SCRIPTS_PATH}/plot_SB.py .
 	cp ${SCRIPTS_PATH}/correlation_lifetime.py .
 
-	sed -i 's/___FIRST_DAT_FILE___/${FIRST_DAT_FILE}/g' input.json
+	sed -i 's/___FIRST_FRAME___/${FIRST_FRAME}/g' input.json
 	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' input.json
 	sed -i 's/___STRIDE___/${STRIDE}/g' input.json
 	sed -i 's/___A___/${A}/g' input.json
