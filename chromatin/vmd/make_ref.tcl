@@ -1,4 +1,5 @@
-mol new box.pdb type pdb first 0 last -1 step 1 waitfor all
+mol new {box.prmtop} type {parm7} first 0 last -1 step 1 waitfor all
+mol addfile {box.inpcrd} type {rst7} first 0 last -1 step 1 waitfor all
 
 set A [atomselect top "residue 0 to 134"]
 set B [atomselect top "residue 135 to 236"]
@@ -25,6 +26,6 @@ $J set chain J
 set sel [atomselect top "not (chain A B C D E F G H I J)"]
 $sel set chain X
 
-set sel [atomselect top all]
+set sel [atomselect top "(chain A B C D E F G H I J X) and not (resname WAT)"]
 $sel writepdb ref.pdb
 exit

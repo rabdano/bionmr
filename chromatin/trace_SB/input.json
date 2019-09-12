@@ -11,7 +11,7 @@
     "trj_filename_first" : 1,
     "trj_filename_last" : ___LAST_DAT_FILE___,
     "trj_filename_pattern" : "../../5_run/run%05d.dat",
-    "reference_pdb_filename" : "../../5_run/run00001.pdb",
+    "reference_pdb_filename" : "../../1_build/ref.pdb",
     "volume_data_filename" : "../../5_run/summary.VOLUME",
 
     "start_frame_of_interest" : ___FIRST_FRAME___,
@@ -19,5 +19,6 @@
     "stride" : ___STRIDE___,
 
     "occurrence_to_print" : 0.05,
-    "shell_thickness" : 30.0
+    "shell_thickness" : 50.0,
+    "n_chains_to_keep" : 10
 }

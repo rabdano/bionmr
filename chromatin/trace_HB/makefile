@@ -42,6 +42,7 @@ input.json:
 	cp ${SCRIPTS_PATH}/plot_HB.py .
 	cp ${SCRIPTS_PATH}/correlation_lifetime.py .
 	cp ${SCRIPTS_PATH}/../wrap/get_summary.VOLUME.sh ../../5_run/get_summary.VOLUME.sh
+	cp ${SCRIPTS_PATH}/../vmd/make_ref.tcl ../../1_build/make_ref.tcl
 
 	sed -i 's/___FIRST_FRAME___/${FIRST_FRAME}/g' input.json
 	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' input.json
@@ -58,7 +59,8 @@ input.json:
 
 hb_trace.dat: | input.json
 	cd ../../5_run; bash get_summary.VOLUME.sh
-	xmol_traj trace_hydrogen_bonds --input-config=input.json > hb_trace.dat
+	cd ../../1_build; /home/seva/bin/vmd -e make_ref.tcl
+	/home/seva/bin/xmol/release_build/src/xmol_traj trace_hydrogen_bonds --input-config=input.json > hb_trace.dat
 
 result.csv: | hb_trace.dat
 	rm -rf Figures
