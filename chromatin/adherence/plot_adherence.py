@@ -3,6 +3,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams.update({'font.size': 14})
 H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
 
 h4_1_adherence = np.loadtxt('adherence_avg_H4-1_KDtree.txt')
