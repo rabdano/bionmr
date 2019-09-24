@@ -13,9 +13,9 @@ plt.figure(figsize=(12, 9))
 fig, ax = plt.subplots()
 
 plt.plot(range(len(h4_1_adherence)), h4_1_adherence, marker='D', ms=7, markeredgecolor='b', markerfacecolor='b',
-         linewidth=2.0, color='b', label='H4-1 [136-159]')
+         linewidth=2.0, color='b', label='H4-1')
 plt.plot(range(len(h4_2_adherence)), h4_2_adherence, marker='D', ms=7, markeredgecolor='g', markerfacecolor='g',
-        linewidth=2.0, color='g', label='H4-2 [623-646]')
+        linewidth=2.0, color='g', label='H4-2')
 
 plt.ylabel('dist(Ca, nucleosome core), $\AA$')
 

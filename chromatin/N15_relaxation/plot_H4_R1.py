@@ -43,15 +43,15 @@ H4_exp_R1 = np.array([1.26765865, 1.291394278, 1.166972683, 1.213193526, 1.17605
 # plot
 fig, ax = plt.subplots()
 ax.plot(H4_resids, H4_R1_1, marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
-        linewidth=2.0, color="b", label="H4-1 [136-159]")
+        linewidth=2.0, color="b", label="H4-1")
 # ax.plot([], [], marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
 #         linewidth=2.0, color="b", label="H4-1 [136-159]")
 ax.plot(H4_resids, H4_R1_2, marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
-        linewidth=2.0, color="g", label="H4-2 [623-646]")
+        linewidth=2.0, color="g", label="H4-2")
 # ax.plot([], [], marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
 #         linewidth=2.0, color="g", label="H4-2 [623-646]")
 ax.plot(H4_exp_resids, H4_exp_R1, marker="o", ms=10, markeredgecolor="r", markerfacecolor="r",
-        linestyle='None', label="Experimental")
+        linestyle='None', label="Experiment")
 
 plt.ylabel(r'${\rm R_{1},\ s^{-1}}$')
 plt.axis([0, 26, 0, 2])
@@ -67,7 +67,7 @@ for i in range(0, n_labels):
     labels.append('{}\n{}'.format(dig, H4_seq[i]))
 ax.set_xticklabels(labels)
 # Put a legend above current axis
-ax.legend(loc='lower left', bbox_to_anchor=(0.01, 1.01), ncol=2,
+ax.legend(loc='lower left', bbox_to_anchor=(0.01, 1.01), ncol=3,
           borderaxespad=0, frameon=False, numpoints=1)
 plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
 

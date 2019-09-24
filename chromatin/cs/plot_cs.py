@@ -103,11 +103,11 @@ for i, l in enumerate(labels):
 
     fig, ax = plt.subplots()
     ax.plot(H4_resids, cs[:24, i], marker="D", ms=5, markeredgecolor="b", markerfacecolor="b",
-            linewidth=1.0, color="b", label="H4-1 [136-159]")
+            linewidth=1.0, color="b", label="H4-1")
     ax.plot(H4_resids, cs[102:102 + 24, i], marker="D", ms=5, markeredgecolor="g", markerfacecolor="g",
-            linewidth=1.0, color="g", label="H4-2 [623-646]")
+            linewidth=1.0, color="g", label="H4-2")
     ax.plot(H4_exp_resids, H4_exp_cs[:, i], marker="o", ms=5, markeredgecolor="r", markerfacecolor="r",
-            linestyle='None', label="Experimental")
+            linestyle='None', label="Experiment")
     ax.plot(H4_resids, rc_cs[:24, i], marker="_", ms=5, markeredgecolor="k", markerfacecolor="k",
             linestyle='None', label="RC")
 
@@ -128,7 +128,7 @@ for i, l in enumerate(labels):
     plt.axis([0, 26, d_mins[i], d_maxs[i]])
     plt.yticks(np.arange(d_mins[i], d_maxs[i] + 0.1, d_step[i]))
     # Put a legend above current axis
-    ax.legend(loc='lower left', bbox_to_anchor=(0.0, 1.01), ncol=2,
+    ax.legend(loc='lower left', bbox_to_anchor=(0.0, 1.01), ncol=3,
               borderaxespad=0, frameon=False, numpoints=1)
     # plt.grid(True)
 
@@ -146,12 +146,12 @@ for i, l in enumerate(labels):
 
     fig, ax = plt.subplots()
     ax.plot(H4_resids, cs[:24, i] - rc_cs[:24, i], marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
-            linewidth=2.0, color="b", label="H4-1 [136-159]")
+            linewidth=2.0, color="b", label="H4-1")
     ax.plot(H4_resids, cs[102:102 + 24, i] - rc_cs[:24, i], marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
-            linewidth=2.0, color="g", label="H4-2 [623-646]")
+            linewidth=2.0, color="g", label="H4-2")
     ax.plot(H4_exp_resids, H4_exp_cs[:, i] - rc_cs[H4_exp_resids - 1, i], marker="o", ms=10, markeredgecolor="r",
             markerfacecolor="r",
-            linestyle='None', label="Experimental")
+            linestyle='None', label="Experiment")
 
     # plt.xlabel('Residue')
 
@@ -170,7 +170,7 @@ for i, l in enumerate(labels):
     plt.axis([0, 26, d_mins_diff[i], d_maxs_diff[i]])
     plt.yticks(np.arange(d_mins_diff[i], d_maxs_diff[i] + 0.1, d_step_diff[i]))
     # Put a legend above current axis
-    ax.legend(loc='lower left', bbox_to_anchor=(0.0, 1.01), ncol=2,
+    ax.legend(loc='lower left', bbox_to_anchor=(0.0, 1.01), ncol=3,
               borderaxespad=0, frameon=False, numpoints=1)
     # plt.grid(True)
 
