@@ -18,6 +18,9 @@
     "end_frame_of_interest" : 10000000,
     "stride" : ___STRIDE___,
 
+    "centroid_distance" : 4.0,
+    "nitrogen_oxygen_distance" : 4.0,
+
     "occurrence_to_print" : 0.05,
     "shell_thickness" : 50.0,
     "n_chains_to_keep" : 10
