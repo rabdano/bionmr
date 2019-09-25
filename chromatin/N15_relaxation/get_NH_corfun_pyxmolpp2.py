@@ -20,7 +20,7 @@ scaling = ___SCALING___
 ratio = ___KEEP_ACF_FRACTION___
 remove_first_point = ___REMOVE_FIRST_POINT___
 
-residues_of_interest = set(list(range(1, 45)) + list(range(136, 160)) + list(range(488, 532)) + list(range(623, 647)))
+residues_of_interest = set(list(range(136, 238)) + list(range(623, 725)))
 
 # read trajectory
 traj, ref = traj_from_dir(path=path_to_traj,

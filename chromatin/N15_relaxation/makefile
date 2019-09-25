@@ -52,6 +52,8 @@ all: | R2_results.txt
 plot:
 	python3 plot_H4_R1.py
 	python3 plot_H4_R2.py
+	python3 plot_H4_R1_full.py
+	python3 plot_H4_R2_full.py
 	python3 plot_autocorrelation_fit.py
 
 init: | get_NH_corfun_pyxmolpp2.py
