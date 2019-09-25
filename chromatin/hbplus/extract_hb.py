@@ -16,9 +16,11 @@ first_dat_file = 51
 last_dat_file = 800
 n_steps = last_dat_file - first_dat_file + 1
 stride = 100
+occurence_to_print = 0.05
 
 # probe atoms
 probe = ((cName == 'J') & (aName == 'P'))
+protein_and_dna_chains = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
 
 def mkdir_p(path):
@@ -133,8 +135,6 @@ traj, ref = traj_from_dir(path=path_to_traj,
                           first=first_dat_file,
                           last=last_dat_file)
 
-chain_ids = [chain.name.str for chain in ref.asChains]
-
 for i, chain in enumerate(ref.asAtoms.asChains):
     print(i, chain.cName, len(chain.asResidues))
 
@@ -159,15 +159,15 @@ start = time.time()
 for frame in tqdm(traj[::stride]):
     # sys.stdout.write(' '*40 + '\r' + 'Frames: {:d}/{:d}:'.format(int((frame.index/stride)+1), int(traj.size/stride)))
     if frame.index == 0:
-        ref_ats = ref.asAtoms
-        frame_ats = frame.asAtoms
+        ref_ats = ref.asAtoms.filter(cName.is_in(set(protein_and_dna_chains)))
+        frame_ats = frame.asAtoms.filter(cName.is_in(set(protein_and_dna_chains)))
         ref_align_atoms = ref_ats.filter(probe)
         frame_align_atoms = frame_ats.filter(probe)
         # align reference by first frame nucleic P
         ref_ats.transform(ref_align_atoms.alignment_to(frame_align_atoms))
         ats_ref = []
         ats_frame = []
-        for cid in sorted(chain_ids):
+        for cid in sorted(protein_and_dna_chains):
             ats_ref.append(ref_ats.filter(cName == cid))
             ats_frame.append(frame_ats.filter(cName == cid))
 
@@ -179,7 +179,7 @@ for frame in tqdm(traj[::stride]):
     shift_finder.scale_lattice_by(scaling_factors[frame.index])
 
     # sys.stdout.write('\t\t')
-    for i, cid in enumerate(sorted(chain_ids)):
+    for i, cid in enumerate(sorted(protein_and_dna_chains)):
         # sys.stdout.write(cid + ' ')
         # sys.stdout.flush()
 
@@ -198,7 +198,7 @@ for frame in tqdm(traj[::stride]):
         c = v3[i].len()
         fmt = 'CRYST1%9.3f%9.3f%9.3f%7.2f%7.2f%7.2f%10s%4s\n'
         f.write(fmt % (a, b, c, alpha, beta, gamma, ' ' * 10, ' ' * 4))
-        frame_ats[0].frame.to_pdb(f)
+        frame_ats.to_pdb(f)
 sys.stdout.write('\n')
 
 files = sorted(glob(output_dir + '/*.pdb'))
@@ -229,6 +229,15 @@ for i, unique_hb in enumerate(unique_hydrogen_bonds):
         if unique_hb in frame_hbs:
             hb_trace[j, i] = 1
 
+to_del = []
+n_hydrogen_bonds = len(hydrogen_bonds)
+for i, hb_occurence in enumerate(np.sum(hb_trace, axis=0)):
+    if hb_occurence/n_hydrogen_bonds < occurence_to_print:
+        to_del.append(i)
+
+unique_hydrogen_bonds = [hb for i, hb in enumerate(unique_hydrogen_bonds) if not (i in to_del)]
+hb_trace = np.delete(hb_trace, to_del, axis=1)
+
 np.savetxt('hb_trace.dat', hb_trace, fmt='%d', header=' '.join(unique_hydrogen_bonds), comments='')
 
-call(['rm', '-rf', 'output_dir'])
+call(['rm', '-rf', output_dir])
