@@ -235,7 +235,7 @@ for i, unique_hb in enumerate(unique_hydrogen_bonds):
             hb_trace[j, i] = 1
     d_rId = int(unique_hb.split("::")[0].split("~")[1].strip())
     a_rId = int(unique_hb.split("--")[1].split("::")[0].split("~")[1].strip())
-    if (d_rId not in h4_1_resids) or (a_rId not in h4_2_resids):
+    if (d_rId not in h4_1_resids) and (a_rId not in h4_2_resids):
         to_del.append(i)
 
 unique_hydrogen_bonds = [hb for i, hb in enumerate(unique_hydrogen_bonds) if not (i in to_del)]
