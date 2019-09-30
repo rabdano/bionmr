@@ -21,7 +21,7 @@
     "centroid_distance" : 100.0,
     "nitrogen_oxygen_distance" : 4.0,
 
-    "occurrence_to_print" : 0.05,
+    "occurrence_to_print" : 0.0,
     "shell_thickness" : 50.0,
     "n_chains_to_keep" : 10
 }
