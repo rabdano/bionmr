@@ -23,15 +23,15 @@ clean:
 	cp ${SCRIPTS_PATH}/../vmd/make_ref.tcl ../../1_build/make_ref.tcl
 	cd ../../1_build; /home/seva/bin/vmd -e make_ref.tcl
 
-input.json:
+hb_input.json:
 	cp ${SCRIPTS_PATH}/hb_input.json .
 	cp ${SCRIPTS_PATH}/extract_hb.py .
 
-	sed -i 's/___FIRST_FRAME___/${FIRST_FRAME}/g' input.json
-	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' input.json
-	sed -i 's/___STRIDE___/${STRIDE}/g' input.json
+	sed -i 's/___FIRST_FRAME___/${FIRST_FRAME}/g' hb_input.json
+	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' hb_input.json
+	sed -i 's/___STRIDE___/${STRIDE}/g' hb_input.json
 
-hb_trace.dat: | ../../5_run/get_summary.VOLUME.sh ../../1_build/ref.pdb input.json
+hb_trace.dat: | ../../5_run/get_summary.VOLUME.sh ../../1_build/ref.pdb hb_input.json
 	python3 extract_hb.py
 
 all: | hb_trace.dat
