@@ -3,5 +3,5 @@
     "trj_filename_last" : ___LAST_DAT_FILE___,
     "volume_data_filename" : "../../5_run/summary.VOLUME",
 
-    "stride" : ___STRIDE___,
+    "stride" : ___STRIDE___
 }
