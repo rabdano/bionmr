@@ -1,0 +1,7 @@
+{
+    "trj_filename_first" : ___FIRST_DAT_FILE___,
+    "trj_filename_last" : ___LAST_DAT_FILE___,
+    "volume_data_filename" : "../../5_run/summary.VOLUME",
+
+    "stride" : ___STRIDE___,
+}

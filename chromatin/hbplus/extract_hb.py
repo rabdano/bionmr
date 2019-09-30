@@ -7,16 +7,18 @@ import sys
 from subprocess import call
 from tqdm import tqdm
 import time
+import json
 
 DEVNULL = open(os.devnull, 'wb')
 
 # setup parameters.
 path_to_traj = "../.."
-first_dat_file = 51
-last_dat_file = 800
+with open('hb_input.json', 'r') as f:
+    pars = json.load(f)
+first_dat_file = int(pars['trj_filename_first'])
+last_dat_file = int(pars['trj_filename_last'])
+stride = int(pars['stride'])
 n_steps = last_dat_file - first_dat_file + 1
-stride = 100
-occurence_to_print = 0.05
 
 # probe atoms
 probe = ((cName == 'J') & (aName == 'P'))
@@ -202,7 +204,7 @@ for frame in tqdm(traj[::stride]):
 sys.stdout.write('\n')
 
 files = sorted(glob(output_dir + '/*.pdb'))
-for i, file in tqdm(enumerate(files)):
+for i, file in enumerate(tqdm(files)):
     # sys.stdout.write(' '*40 + '\r' + 'HBPLUS: {}/{}\r'.format(i, len(files)))
     fn = file[-11:]
     cmd = ['/home/seva/bin/hbplus/hbplus']
@@ -224,15 +226,16 @@ unique_hydrogen_bonds = sorted(list(unique_hydrogen_bonds), key=lambda hb: int(h
 
 hb_trace = np.zeros((len(hydrogen_bonds), len(unique_hydrogen_bonds)), dtype=int)
 
+to_del = []
+h4_1_resids = range(136, 237 + 1)
+h4_2_resids = range(623, 724 + 1)
 for i, unique_hb in enumerate(unique_hydrogen_bonds):
     for j, frame_hbs in enumerate(hydrogen_bonds):
         if unique_hb in frame_hbs:
             hb_trace[j, i] = 1
-
-to_del = []
-n_hydrogen_bonds = len(hydrogen_bonds)
-for i, hb_occurence in enumerate(np.sum(hb_trace, axis=0)):
-    if hb_occurence/n_hydrogen_bonds < occurence_to_print:
+    d_rId = int(unique_hb.split("::")[0].split("~")[1].strip())
+    a_rId = int(unique_hb.split("--")[1].split("::")[0].split("~")[1].strip())
+    if (d_rId not in h4_1_resids) or (a_rId not in h4_2_resids):
         to_del.append(i)
 
 unique_hydrogen_bonds = [hb for i, hb in enumerate(unique_hydrogen_bonds) if not (i in to_del)]
