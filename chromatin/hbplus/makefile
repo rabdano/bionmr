@@ -27,7 +27,7 @@ hb_input.json:
 	cp ${SCRIPTS_PATH}/hb_input.json .
 	cp ${SCRIPTS_PATH}/extract_hb.py .
 
-	sed -i 's/___FIRST_FRAME___/${FIRST_FRAME}/g' hb_input.json
+	sed -i 's/___FIRST_DAT_FILE___/${FIRST_DAT_FILE}/g' hb_input.json
 	sed -i 's/___LAST_DAT_FILE___/${LAST_DAT_FILE}/g' hb_input.json
 	sed -i 's/___STRIDE___/${STRIDE}/g' hb_input.json
 
