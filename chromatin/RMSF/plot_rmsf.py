@@ -90,7 +90,7 @@ for i in range(0, n_labels):
     labels.append('{}\n{}'.format(dig, H4_seq[i]))
 ax.set_xticklabels(labels)
 
-plt.ylim((0,25))
+plt.ylim((0, 20))
 
 plt.legend()
 

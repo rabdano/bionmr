@@ -17,7 +17,7 @@ plt.plot(range(len(h4_1_adherence)), h4_1_adherence, marker='D', ms=7, markeredg
 plt.plot(range(len(h4_2_adherence)), h4_2_adherence, marker='D', ms=7, markeredgecolor='g', markerfacecolor='g',
         linewidth=2.0, color='g', label='H4-2')
 
-plt.ylabel('dist(Ca, nucleosome core), $\AA$')
+plt.ylabel('Minimal distance to NCP, $\AA$')
 
 plt.xticks(range(len(h4_1_adherence)))
 
