@@ -20,6 +20,7 @@ plt.plot(range(len(h4_2_adherence)), h4_2_adherence, marker='D', ms=7, markeredg
 plt.ylabel('Minimal distance to NCP, $\AA$')
 
 plt.xticks(range(len(h4_1_adherence)))
+plt.yitcks(range(0, 21, 2))
 
 n_labels = len(ax.get_xticklabels())
 labels = []

@@ -79,6 +79,7 @@ def to_label(a):
 
 
 plt.xticks(range(len(rmsf)))
+plt.yitcks(range(0, 21, 2))
 
 n_labels = len(ax.get_xticklabels())
 labels = []
