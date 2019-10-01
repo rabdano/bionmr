@@ -71,13 +71,13 @@ for i in range(n_resids):
         rc_cs[i, j] = get_RC(i + 1, l)
 
 # Pick data to H4-tail only
-H4_resids = list(range(1, 25))
+H4_resids = list(range(1, 103))
 d_mins = [6.5, 100, 40, 10]
-d_maxs = [10, 135, 70, 70]
-d_step = [0.5, 5.0, 5.0, 5.0]
-d_mins_diff = [-1, -5, -3, -3]
-d_maxs_diff = [1, 5, 3, 3]
-d_step_diff = [0.2, 1.0, 1.0, 1.0]
+d_maxs = [10, 135, 70, 80]
+d_step = [0.5, 5.0, 5.0, 10.0]
+d_mins_diff = [-2, -10, -8, -8]
+d_maxs_diff = [2, 10, 8, 8]
+d_step_diff = [0.5, 2.0, 1.0, 1.0]
 
 # Plot
 
@@ -102,30 +102,31 @@ for i, l in enumerate(labels):
     plt.figure(figsize=(8, 6))
 
     fig, ax = plt.subplots()
-    ax.plot(H4_resids, cs[:24, i], marker="D", ms=5, markeredgecolor="b", markerfacecolor="b",
+    ax.plot(H4_resids, cs[:102, i], marker="D", ms=5, markeredgecolor="b", markerfacecolor="b",
             linewidth=1.0, color="b", label="H4-1")
-    ax.plot(H4_resids, cs[102:102 + 24, i], marker="D", ms=5, markeredgecolor="g", markerfacecolor="g",
+    ax.plot(H4_resids, cs[102:102 + 102, i], marker="D", ms=5, markeredgecolor="g", markerfacecolor="g",
             linewidth=1.0, color="g", label="H4-2")
     ax.plot(H4_exp_resids, H4_exp_cs[:, i], marker="o", ms=5, markeredgecolor="r", markerfacecolor="r",
             linestyle='None', label="Experiment")
-    ax.plot(H4_resids, rc_cs[:24, i], marker="_", ms=5, markeredgecolor="k", markerfacecolor="k",
+    ax.plot(H4_resids, rc_cs[:102, i], marker="_", ms=5, markeredgecolor="k", markerfacecolor="k",
             linestyle='None', label="RC")
 
     # plt.xlabel(r'${\rm Residue}$')
 
-    plt.xticks(np.arange(1, 25, 1))
-    n_labels = len(ax.get_xticklabels())
-    labels = []
-    for j in range(0, n_labels):
-        if (((j + 1) % 5) == 0) | (j == 0):
-            dig = str(j + 1)
-        else:
-            dig = ''
-        labels.append('{}\n{}'.format(dig, H4_seq[j]))
-    ax.set_xticklabels(labels)
+    plt.xticks([1] + list(range(10, 103, 10)))
+    # n_labels = len(ax.get_xticklabels())
+    # labels = []
+    # for j in range(0, n_labels):
+    #     if (((j+1) % 10) == 0) | (j == 0):
+    #         dig = str(j+1)
+    #     else:
+    #         dig = ''
+    #     # labels.append('{}\n{}'.format(dig, H4_seq[i]))
+    #     labels.append('{}'.format(dig))
+    # ax.set_xticklabels(labels)
 
     plt.ylabel('\u03B4' + l + " , ppm")
-    plt.axis([0, 26, d_mins[i], d_maxs[i]])
+    plt.axis([0, 103, d_mins[i], d_maxs[i]])
     plt.yticks(np.arange(d_mins[i], d_maxs[i] + 0.1, d_step[i]))
     # Put a legend above current axis
     ax.legend(loc='lower left', bbox_to_anchor=(0.0, 1.01), ncol=3,
@@ -145,39 +146,40 @@ for i, l in enumerate(labels):
     plt.figure(figsize=(8, 6))
 
     fig, ax = plt.subplots()
-    ax.plot(H4_resids, cs[:24, i] - rc_cs[:24, i], marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
+    ax.plot(H4_resids, cs[:102, i] - rc_cs[:102, i], marker="D", ms=5, markeredgecolor="b", markerfacecolor="b",
             linewidth=2.0, color="b", label="H4-1")
-    ax.plot(H4_resids, cs[102:102 + 24, i] - rc_cs[:24, i], marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
+    ax.plot(H4_resids, cs[102:102 + 102, i] - rc_cs[:102, i], marker="D", ms=5, markeredgecolor="g", markerfacecolor="g",
             linewidth=2.0, color="g", label="H4-2")
-    ax.plot(H4_exp_resids, H4_exp_cs[:, i] - rc_cs[H4_exp_resids - 1, i], marker="o", ms=10, markeredgecolor="r",
+    ax.plot(H4_exp_resids, H4_exp_cs[:, i] - rc_cs[H4_exp_resids - 1, i], marker="o", ms=7, markeredgecolor="r",
             markerfacecolor="r",
             linestyle='None', label="Experiment")
 
-    # plt.xlabel('Residue')
+    plt.xlabel('Residue')
 
-    plt.xticks(np.arange(1, 25, 1))
-    n_labels = len(ax.get_xticklabels())
-    labels = []
-    for j in range(0, n_labels):
-        if (((j + 1) % 5) == 0) | (j == 0):
-            dig = str(j + 1)
-        else:
-            dig = ''
-        labels.append('{}\n{}'.format(dig, H4_seq[j]))
-    ax.set_xticklabels(labels)
+    plt.xticks([1] + list(range(10, 103, 10)))
+    # n_labels = len(ax.get_xticklabels())
+    # labels = []
+    # for j in range(0, n_labels):
+    #     if (((j+1) % 10) == 0) | (j == 0):
+    #         dig = str(j+1)
+    #     else:
+    #         dig = ''
+    #     # labels.append('{}\n{}'.format(dig, H4_seq[i]))
+    #     labels.append('{}'.format(dig))
+    # ax.set_xticklabels(labels)
 
-    plt.ylabel('\u03B4' + l + ' - \u03B4' + l + r'$_{\rm RC}$, ppm')
-    plt.axis([0, 26, d_mins_diff[i], d_maxs_diff[i]])
+    plt.ylabel(l + ' Secondary shift, ppm')
+    plt.axis([0, 103, d_mins_diff[i], d_maxs_diff[i]])
     plt.yticks(np.arange(d_mins_diff[i], d_maxs_diff[i] + 0.1, d_step_diff[i]))
     # Put a legend above current axis
     ax.legend(loc='lower left', bbox_to_anchor=(0.0, 1.01), ncol=3,
               borderaxespad=0, frameon=False, numpoints=1)
     # plt.grid(True)
 
-    plt.text(0.98, 0.98, "RMSD: %.2f, %.2f" % (rmsd_1, rmsd_2),
-             horizontalalignment='right',
-             verticalalignment='top',
-             transform=ax.transAxes)
+    # plt.text(0.98, 0.98, "RMSD: %.2f, %.2f" % (rmsd_1, rmsd_2),
+    #          horizontalalignment='right',
+    #          verticalalignment='top',
+    #          transform=ax.transAxes)
 
     plt.savefig(plot_out_name + "_" + l + "_diff.png", dpi=300, bbox_inches='tight')
 

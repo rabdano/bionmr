@@ -43,32 +43,32 @@ H4_exp_R1 = np.array([1.26765865, 1.291394278, 1.166972683, 1.213193526, 1.17605
 
 # plot
 fig, ax = plt.subplots()
-ax.plot(H4_resids, H4_R1_1, marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
+ax.plot(H4_resids, H4_R1_1, marker="D", ms=5, markeredgecolor="b", markerfacecolor="b",
         linewidth=2.0, color="b", label="H4-1")
 # ax.plot([], [], marker="D", ms=7, markeredgecolor="b", markerfacecolor="b",
 #         linewidth=2.0, color="b", label="H4-1 [136-159]")
-ax.plot(H4_resids, H4_R1_2, marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
+ax.plot(H4_resids, H4_R1_2, marker="D", ms=5, markeredgecolor="g", markerfacecolor="g",
         linewidth=2.0, color="g", label="H4-2")
 # ax.plot([], [], marker="D", ms=7, markeredgecolor="g", markerfacecolor="g",
 #         linewidth=2.0, color="g", label="H4-2 [623-646]")
-ax.plot(H4_exp_resids, H4_exp_R1, marker="o", ms=10, markeredgecolor="r", markerfacecolor="r",
+ax.plot(H4_exp_resids, H4_exp_R1, marker="o", ms=7, markeredgecolor="r", markerfacecolor="r",
         linestyle='None', label="Experiment")
 
 plt.ylabel(r'${\rm R_{1},\ s^{-1}}$')
 plt.xlabel('Residue')
 plt.axis([0, 103, 0, 1.4])
-plt.xticks(np.arange(1, 102, 1))
+plt.xticks([1] + list(range(10, 103, 10)))
 plt.yticks(np.arange(0, 1.41, 0.2))
-n_labels = len(ax.get_xticklabels())
-labels = []
-for i in range(0, n_labels):
-    if (((i+1) % 10) == 0) | (i == 0):
-        dig = str(i+1)
-    else:
-        dig = ''
-    # labels.append('{}\n{}'.format(dig, H4_seq[i]))
-    labels.append('{}'.format(dig))
-ax.set_xticklabels(labels)
+# n_labels = len(ax.get_xticklabels())
+# labels = []
+# for i in range(0, n_labels):
+#     if (((i+1) % 10) == 0) | (i == 0):
+#         dig = str(i+1)
+#     else:
+#         dig = ''
+#     # labels.append('{}\n{}'.format(dig, H4_seq[i]))
+#     labels.append('{}'.format(dig))
+# ax.set_xticklabels(labels)
 # Put a legend above current axis
 ax.legend(loc='lower left', bbox_to_anchor=(0.01, 1.01), ncol=3,
           borderaxespad=0, frameon=False, numpoints=1)

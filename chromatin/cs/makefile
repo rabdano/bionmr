@@ -1,5 +1,5 @@
-FIRST_PDB_FILE=1
-LAST_PDB_FILE=5
+FIRST_PDB_FILE=51
+LAST_PDB_FILE=1000
 
 SCRIPTS_PATH=/home/seva/scripts/git/bionmr/chromatin/cs
 
