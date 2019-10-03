@@ -64,8 +64,10 @@ resnames = [d[1].decode('UTF-8') for d in data]
 rmsf1 = [d[2] for d in data1]
 rmsf2 = [d[2] for d in data2]
 
-plt.step(range(len(rmsf1)), rmsf1, where="mid", color='b', label='H4-1')
-plt.step(range(len(rmsf2)), rmsf2, where="mid", color='g', label='H4-2')
+plt.plot(range(len(rmsf1)), rmsf1, marker='D', ms=7, markeredgecolor='b', markerfacecolor='b',
+         linewidth=2.0, color='b', label='H4-1')
+plt.plot(range(len(rmsf2)), rmsf2, marker='D', ms=7, markeredgecolor='g', markerfacecolor='g',
+        linewidth=2.0, color='g', label='H4-2')
 
 plt.ylabel("RMSF, $\AA$")
 # plt.grid(color="#CCCCCC", lw=0.1)
