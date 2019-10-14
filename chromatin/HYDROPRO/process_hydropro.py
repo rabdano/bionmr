@@ -63,3 +63,5 @@ print("STDEV =", "%.1f" % (np.std(taus) * 1e9), "ns")
 with open('results.txt', 'w') as f:
     f.write("Mean tau = %.1f ns\n" % (np.mean(taus) * 1e9))
     f.write(("STDEV = %.1f ns\n" % (np.std(taus) * 1e9)))
+
+call(['rm', '-rf', './*.pdb'])
