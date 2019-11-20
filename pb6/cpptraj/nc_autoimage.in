@@ -1,0 +1,9 @@
+parm ../box.parm7
+list parm
+parminfo 0
+trajin run00001.nc
+list trajin
+
+autoimage
+trajout run00001.autoimage.nc include_ep
+run

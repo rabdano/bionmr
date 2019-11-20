@@ -1,0 +1,8 @@
+parm ../box.parm7
+list parm
+parminfo 0
+trajin run00001.rst
+list trajin
+
+trajout run00001.rst.pdb include_ep
+run
