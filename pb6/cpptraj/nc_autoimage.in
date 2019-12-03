@@ -1,9 +1,12 @@
-parm ../box.parm7
+parm box.parm7
 list parm
 parminfo 0
-trajin run00001.nc
+trajin box.rst7
+trajin 5_run/run*.rst
 list trajin
 
 autoimage
-trajout run00001.autoimage.nc include_ep
+center :1-4176 mass origin
+image origin center familiar
+trajout autoimage.nc include_ep
 run
