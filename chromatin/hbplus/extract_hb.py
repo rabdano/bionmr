@@ -227,16 +227,18 @@ unique_hydrogen_bonds = sorted(list(unique_hydrogen_bonds), key=lambda hb: int(h
 hb_trace = np.zeros((len(hydrogen_bonds), len(unique_hydrogen_bonds)), dtype=int)
 
 to_del = []
-h4_1_resids = range(136, 237 + 1)
-h4_2_resids = range(623, 724 + 1)
+h4_1_resids = list(range(136, 237 + 1))
+h4_2_resids = list(range(623, 724 + 1))
+h4_resids = h4_1_resids + h4_2_resids
 for i, unique_hb in enumerate(unique_hydrogen_bonds):
-    for j, frame_hbs in enumerate(hydrogen_bonds):
-        if unique_hb in frame_hbs:
-            hb_trace[j, i] = 1
     d_rId = int(unique_hb.split("::")[0].split("~")[1].strip())
     a_rId = int(unique_hb.split("--")[1].split("::")[0].split("~")[1].strip())
-    if (d_rId not in h4_1_resids) and (a_rId not in h4_2_resids):
+    if (d_rId not in h4_resids) or (a_rId not in h4_resids):
         to_del.append(i)
+    else:
+        for j, frame_hbs in enumerate(hydrogen_bonds):
+            if unique_hb in frame_hbs:
+                hb_trace[j, i] = 1
 
 unique_hydrogen_bonds = [hb for i, hb in enumerate(unique_hydrogen_bonds) if not (i in to_del)]
 hb_trace = np.delete(hb_trace, to_del, axis=1)
