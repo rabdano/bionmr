@@ -190,7 +190,7 @@ for frame in tqdm(traj[::stride]):
 
         ats_frame[i].transform(Translation3d(shift))
 
-    shift_finder.scale_lattice_by(1.0/scaling_factors[i])
+    shift_finder.scale_lattice_by(1.0/scaling_factors[frame.index])
 
     # write updated pdb
     fn = '{:07d}.pdb'.format(frame.index)
