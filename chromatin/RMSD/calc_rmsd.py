@@ -121,14 +121,15 @@ t2 = timer()
 # run through trajectory
 for frame in tqdm(traj[::stride], disable=False):
     if frame.index == 0:
-        ref_probe = ref_ats.filter(probe)
-        frame_probe = frame.asAtoms.filter(probe)
-
         frame_ats = frame.asAtoms
-        frame_align_protein = frame.asAtoms.filter(cName.is_in({"A", "B", "C", "D", "E", "F", "G", "H"}))
-        frame_align_ca = frame.asAtoms.filter(aName == "CA")
-        frame_align_ca_ss = frame.asAtoms.filter((aName == "CA") & (rId.is_in(ss_residues)))
-        frame_align_dna = frame.asAtoms.filter(dna_align_pred)
+
+        ref_probe = ref_ats.filter(probe)
+        frame_probe = frame_ats.filter(probe)
+
+        frame_align_protein = frame_ats.filter(cName.is_in({"A", "B", "C", "D", "E", "F", "G", "H"}))
+        frame_align_ca = frame_ats.filter(aName == "CA")
+        frame_align_ca_ss = frame_ats.filter((aName == "CA") & (rId.is_in(ss_residues)))
+        frame_align_dna = frame_ats.filter(dna_align_pred)
 
         # align reference by first frame nucleic P
         alignment = calc_alignment(frame_ats.filter(probe).toCoords, ref_ats.filter(probe).toCoords)
@@ -140,8 +141,8 @@ for frame in tqdm(traj[::stride], disable=False):
             ats_ref.append(ref_ats.filter(cName == cid))
             ats_frame.append(frame_ats.filter(cName == cid))
 
-    # align all atoms by one of DNA chains
-    ref_probe.transform(ref_probe.alignment_to(frame_probe))
+    # align all reference atoms by one of DNA chains
+    ref_ats.transform(ref_probe.alignment_to(frame_probe))
 
     # cycle through chains and check first atom displacement
     shift_finder.scale_lattice_by(scaling_factors[frame.index])
