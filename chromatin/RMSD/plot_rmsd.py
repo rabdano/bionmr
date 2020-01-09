@@ -31,6 +31,7 @@ for i, fn in enumerate(files):
 plt.xlabel("Time, ns")
 plt.ylabel(r"RMSD, ${\rm\AA}$")
 plt.legend()
+plt.axis([-10, 1010, 0.9, 6.0])
 
 plt.savefig("RMSD.png", bbox_inches="tight")
 plt.savefig("RMSD.pdf", bbox_inches="tight")
