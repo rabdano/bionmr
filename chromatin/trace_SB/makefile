@@ -53,7 +53,7 @@ input.json:
 sb_trace.dat: | input.json
 	cd ../../5_run; bash get_summary.VOLUME.sh
 	cd ../../1_build; /home/seva/bin/vmd -e make_ref.tcl
-	/home/seva/bin/xmol/release_build/src/xmol_traj trace_salt_bridges --input-config=input.json > sb_trace.dat
+	/home/seva/bin/xmol/release_build_sb/src/xmol_traj trace_salt_bridges --input-config=input.json > sb_trace.dat
 
 result.csv: | sb_trace.dat
 	rm -rf Figures
