@@ -1,0 +1,12 @@
+parm ../../box.parm7
+list parm
+parminfo 0
+trajin ../../box.rst7
+trajin ../../5_run/run*.rst
+list trajin
+strip !:1-1264 parmout protein.prmtop
+autoimage
+center :1-1264 mass origin
+image origin center familiar
+trajout run00001.nc onlyframes 2-1001
+run
