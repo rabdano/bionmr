@@ -19,7 +19,7 @@ def cm2inch(*tupl):
 
 
 # read data
-cor = 'cor_NH____FIRST_DAT_FILE___-___LAST_DAT_FILE____diluted'
+cor = 'cor_NH____FIRST_DAT_FILE___-___LAST_DAT_FILE____tumbling_on'
 files = sorted(glob(cor+'/*.cor'))
 
 # read fitted amps and taus

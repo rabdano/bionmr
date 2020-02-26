@@ -9,7 +9,7 @@ KEEP_ACF_FRACTION=0.8
 FFT_ACF=True
 REMOVE_FIRST_POINT=True
 REP=3
-N_EXP=6
+N_EXP=4
 SCRIPTS_PATH=/home/seva/scripts/git/bionmr/chromatin/N15_relaxation
 
 .PHONY: all clean plot init
