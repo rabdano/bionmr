@@ -33,6 +33,12 @@ class Corfun:
             self.info.append(info)
             self.resi.append(resi)
 
+    def write(self, path):
+        for acf, res, inf in zip(self.data, self.resi, self.info):
+            resname = inf.split("-")[1]
+            fname = path + "/%04d_%3s.cor" % (res, resname)
+            np.savetxt(fname, acf)
+
     @staticmethod
     def multiexponent(x, *args):
         N = int(len(args) / 2)
