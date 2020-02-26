@@ -81,9 +81,12 @@ class Corfun:
                 sys.stdout.write('> fitting %s: %02d/%02d ' % (info, i+1, rep))
                 guess = np.zeros(n_exp * 2)
                 guess[:n_exp] = sp[:n_exp]
-                for j in range(n_exp - 1):
-                    guess[j + n_exp] = 10 ** (randminmax(np.log10(sp[j + n_exp]), np.log10(sp[j + n_exp + 1])))
-                guess[-1] = 10 ** (randminmax(np.log10(sp[-1]), np.log10(sp[-1] ** 2 / sp[-2])))
+                # for j in range(n_exp - 1):
+                #     guess[j + n_exp] = 10 ** (randminmax(np.log10(sp[j + n_exp]), np.log10(sp[j + n_exp + 1])))
+                # guess[-1] = 10 ** (randminmax(np.log10(sp[-1]), np.log10(sp[-1] ** 2 / sp[-2])))
+                guess[n_exp] = 10 ** (randminmax(np.log10(sp[n_exp]) / 2, np.log10(sp[n_exp])))
+                for j in range(n_exp + 1, n_exp * 2):
+                    guess[j] = 10 ** (randminmax(np.log10(sp[j - 1]), np.log10(sp[j])))
                 guess = guess.tolist()
 
                 try:
