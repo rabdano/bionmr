@@ -10,6 +10,7 @@ LAST_PDB_FILE_FMT=$(shell printf "%05d" ${LAST_PDB_FILE})
 all: | shiftx2 shifts
 	python3 sum_shiftx2_shifts.py
 	python3 plot_cs.py
+	rm -rf pdb_shift*/*.pdb
 
 clean:
 	rm -f *.txt
