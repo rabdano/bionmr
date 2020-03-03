@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import numpy as np
 
-plot_out_name = 'R1_full.png'
+plot_out_name = 'R1_full'
 
 H4_seq = 'SGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGG'
 
@@ -106,5 +106,6 @@ axins.set_xticklabels(labels)
 
 
 
-plt.savefig(plot_out_name, dpi=300, bbox_inches='tight')
+plt.savefig(plot_out_name + ".png", dpi=300, bbox_inches='tight')
+plt.savefig(plot_out_name + ".pdf", dpi=300, bbox_inches='tight')
 
