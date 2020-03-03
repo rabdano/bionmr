@@ -44,8 +44,8 @@ for file, a in zip(files, acfs):
 
     # plot
     plt.clf()
-    plt.plot(data[:, 0], data[:, 1], 'b-', linewidth=0.5)
-    plt.plot(data[:, 0], data_fit, 'r-', linewidth=0.5)
+    plt.plot(data[:, 0], data[:, 1], 'b-', linewidth=3)
+    plt.plot(data[:, 0], data_fit, 'r-', linewidth=2)
     plt.xlabel('Time, ps')
     # axis_limits = [-10, data[-1, 0]+10, -0.2, 1.01]
     axis_limits = [-1000, 101000, 0, 1.01]
