@@ -10,14 +10,6 @@ n_exp = ___N_EXP___
 plot_out_name = 'autocor_fit_results.pdf'
 step = 1e-12
 
-def cm2inch(*tupl):
-    inch = 2.54
-    if isinstance(tupl[0], tuple):
-        return tuple(i/inch for i in tupl[0])
-    else:
-        return tuple(i/inch for i in tupl)
-
-
 # read data
 cor = 'cor_NH____FIRST_DAT_FILE___-___LAST_DAT_FILE____tumbling_on'
 files = sorted(glob(cor+'/*.cor'))
@@ -28,7 +20,7 @@ with open('autocor_fit_results.txt', 'r') as af:
 
 # create file for plot
 pp = PdfPages(plot_out_name)
-plt.figure(figsize=cm2inch(16.0, 12.0))
+plt.figure(figsize=(16.0/2.54, 12.0/2.54))
 
 for file, a in zip(files, acfs):
     print(file)
