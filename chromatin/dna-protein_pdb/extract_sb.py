@@ -3,7 +3,6 @@ from glob import glob
 import numpy as np
 from scipy.spatial import cKDTree
 from tqdm import tqdm
-import pyxmolpp2
 
 cutoff = 8.0  # cutoff N-P[DNA] distance
 protein_resnames = {"ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE",
@@ -14,10 +13,10 @@ fn_out_lys_po4 = "lys-po4.csv"
 fn_out_nh3_po4 = "nh3-po4.csv"
 fn_out_arg_po4 = "arg-po4.csv"
 
-lys_n_p, lys_ce_n_p, lys_n_op1, lys_n_op2, lys_n_op12, lys_n_o3, lys_n_o5 = [], [], [], [], [], [], []
-nh3_n_p, nh3_ca_n_p, nh3_n_op1, nh3_n_op2, nh3_n_op12, nh3_n_o3, nh3_n_o5 = [], [], [], [], [], [], []
-arg_n12_p, arg_ne_op12, arg_n1_op1, arg_n1_op2, arg_n1_p, arg_n2_op1, arg_n2_op2, arg_n2_p = [], [], [], [], [], [], [], []
-arg_ne_n1_p, arg_ne_n2_p, arg_ne_cz_p, arg_cz_n1_p, arg_cz_n2_p = [], [], [], [], []
+lys_n_op12, lys_ce_n_p, lys_n_p, lys_n_op1, lys_n_op2, lys_n_o3, lys_n_o5 = [], [], [], [], [], [], []
+nh3_n_op12, nh3_ca_n_p, nh3_n_p, nh3_n_op1, nh3_n_op2, nh3_n_o3, nh3_n_o5 = [], [], [], [], [], [], []
+arg_n12_p, arg_ne_op12, arg_n12_op12, arg_n1_op1, arg_n1_op2, arg_n1_p, arg_n2_op1, arg_n2_op2, arg_n2_p, arg_ne_n1_p, \
+    arg_ne_n2_p, arg_ne_cz_p, arg_cz_n1_p, arg_cz_n2_p = [], [], [], [], [], [], [], [], [], [], [], [], [], []
 arg_pairs = []
 
 
@@ -141,6 +140,10 @@ for file in tqdm(files, disable=False):
             # store distances and angles
             arg_n12_p.append(min(distance(n1_crd, p_crd), distance(n2_crd, p_crd)))
             arg_ne_op12.append(min(distance(ne_crd, op1_crd), distance(ne_crd, op2_crd)))
+            arg_n12_op12.append(min(distance(n1_crd, op1_crd),
+                                    distance(n1_crd, op2_crd),
+                                    distance(n2_crd, op1_crd),
+                                    distance(n2_crd, op2_crd)))
             arg_n1_op1.append(distance(n1_crd, op1_crd))
             arg_n1_op2.append(distance(n1_crd, op2_crd))
             arg_n1_p.append(distance(n1_crd, p_crd))
@@ -156,17 +159,17 @@ for file in tqdm(files, disable=False):
             arg_pairs.append(f"{argns[n1_i].cName.str}{argns[n1_i].rId.serial}")
 
 # save distances and angles to files
-results_lys = np.array([lys_n_p, lys_ce_n_p, lys_n_op1, lys_n_op2, lys_n_op12, lys_n_o3, lys_n_o5]).T
+results_lys = np.array([lys_n_op12, lys_ce_n_p, lys_n_p, lys_n_op1, lys_n_op2, lys_n_o3, lys_n_o5]).T
 np.savetxt(fn_out_lys_po4, results_lys, fmt="%.5f", delimiter=",",
-           header="lys_n_p, lys_ce_n_p, lys_n_op1, lys_n_op2, lys_n_op12, lys_n_o3, lys_n_o5")
+           header="lys_n_op12, lys_ce_n_p, lys_n_p, lys_n_op1, lys_n_op2, lys_n_o3, lys_n_o5")
 
-results_nh3 = np.array([nh3_n_p, nh3_ca_n_p, nh3_n_op1, nh3_n_op2, nh3_n_op12, nh3_n_o3, nh3_n_o5]).T
+results_nh3 = np.array([nh3_n_op12, nh3_ca_n_p, nh3_n_p, nh3_n_op1, nh3_n_op2, nh3_n_o3, nh3_n_o5]).T
 np.savetxt(fn_out_nh3_po4, results_nh3, fmt="%.5f", delimiter=",",
-           header="nh3_n_p, nh3_ca_n_p, nh3_n_op1, nh3_n_op2, nh3_n_op12, nh3_n_o3, nh3_n_o5")
+           header="nh3_n_op12, nh3_ca_n_p, nh3_n_p, nh3_n_op1, nh3_n_op2, nh3_n_o3, nh3_n_o5")
 
 results_arg = np.array(
-    [arg_n12_p, arg_ne_op12, arg_n1_op1, arg_n1_op2, arg_n1_p, arg_n2_op1, arg_n2_op2, arg_n2_p, arg_ne_n1_p,
-     arg_ne_n2_p, arg_ne_cz_p, arg_cz_n1_p, arg_cz_n2_p]).T
+    [arg_n12_p, arg_ne_op12, arg_n12_op12, arg_n1_op1, arg_n1_op2, arg_n1_p, arg_n2_op1, arg_n2_op2, arg_n2_p,
+     arg_ne_n1_p, arg_ne_n2_p, arg_ne_cz_p, arg_cz_n1_p, arg_cz_n2_p]).T
 # remove duplicate information for ARG
 to_del = []
 for i, pair in enumerate(arg_pairs[:-1]):
@@ -174,5 +177,5 @@ for i, pair in enumerate(arg_pairs[:-1]):
         to_del.append(i + 1)
 results_arg = np.delete(results_arg, to_del, axis=0)
 np.savetxt(fn_out_arg_po4, results_arg, fmt="%.5f", delimiter=",",
-           header=("arg_n12_p, arg_ne_op12, arg_n1_op1, arg_n1_op2, arg_n1_p, arg_n2_op1, arg_n2_op2, arg_n2_p," +
-                   " arg_ne_n1_p, arg_ne_n2_p, arg_ne_cz_p, arg_cz_n1_p, arg_cz_n2_p"))
+           header=("arg_n12_p, arg_ne_op12, arg_n12_op12, arg_n1_op1, arg_n1_op2, arg_n1_p, arg_n2_op1, arg_n2_op2," +
+                   " arg_n2_p, arg_ne_n1_p, arg_ne_n2_p, arg_ne_cz_p, arg_cz_n1_p, arg_cz_n2_p"))
