@@ -3,3 +3,4 @@ chromatin/N15_relaxation/__pycache__
 *.pyc
 chromatin/dna-protein_pdb/pdbs/*.pdb
 chromatin/dna-protein_pdb/Figures/*
+chromatin/dna-protein_pdb/*.csv
