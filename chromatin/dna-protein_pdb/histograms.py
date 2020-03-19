@@ -47,6 +47,11 @@ for fn in [fn_lys_po4, fn_nh3_po4, fn_arg_po4]:
             dist_angle_bin_vol[i, j] = 2.0 * np.pi * (0.5 * (r2 + r1))**2 * np.sin(0.5 * (th2 + th1) * np.pi / 180.0) * (r2 - r1) * (th2 - th1) * np.pi / 180.0
 
     for i, label, x in zip(range(len(data.T)), header, data.T):
+        # skip atom IDs
+        if len(label.split("_")) < 2:
+            continue
+
+        # plot
         plt.figure()
         if np.mean(x) < 20:
             hist, bin_edges = np.histogram(x, bins=np.linspace(dist_start, dist_end, dist_nbin + 1))
@@ -77,7 +82,7 @@ for fn in [fn_lys_po4, fn_nh3_po4, fn_arg_po4]:
             plt.xlim(angle_start, angle_end)
         plt.ylabel('Count')
         plt.title(label)
-        plt.savefig("Figures/" + fn[:-4] + "_" + label + ".png", bbox_inches="tight")
+        plt.savefig("Figures/" + fn[:-4] + "_" + label + ".pdf", bbox_inches="tight")
         plt.close()
 
     # plot 2D
@@ -129,4 +134,4 @@ for fn in [fn_lys_po4, fn_nh3_po4, fn_arg_po4]:
         plt.ylim([0, 180])
 
     plt.colorbar(im, ax=ax)
-    plt.savefig("Figures/" + fn[:-4] + "_" + header[0] + "-" + header[1] + "_2D.png")
+    plt.savefig("Figures/" + fn[:-4] + "_" + header[0] + "-" + header[1] + "_2D.pdf", bbox_inches="tight")
