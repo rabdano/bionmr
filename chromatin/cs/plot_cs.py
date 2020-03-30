@@ -45,7 +45,9 @@ H4_exp_cs = np.array([[8.500, 120.775, 56.725, 31.226],
                       [8.592, 110.159, 45.770, np.nan],
                       [8.302, 108.902, 45.451, np.nan],
                       [8.230, 123.793, 52.755, 19.764]])
-
+# referencing (added March 30, 2020)
+H4_exp_cs[:, 2] -= 0.3  # CA-0.3ppm
+H4_exp_cs[:, 3] -= 0.3  # CB-0.3ppm
 
 # Random coil shifts
 def get_RC(rId, aName, path_to_RC=RC_path):
@@ -58,7 +60,6 @@ def get_RC(rId, aName, path_to_RC=RC_path):
     RC = 0.0
     for line in lines:
         s = line.split()
-        # print(s,rId, int(s[0].strip()), aName, str(s[2].strip()))
         if (rId == int(s[0].strip())) & (aName == str(s[3].strip())):
             RC = float(s[4].strip())
             break
@@ -79,8 +80,9 @@ d_mins_diff = [-2, -10, -8, -8]
 d_maxs_diff = [2, 10, 8, 8]
 d_step_diff = [0.5, 2.0, 1.0, 1.0]
 
-# Plot
-
+#
+#  Plot
+#
 for i, l in enumerate(labels):
 
     # Calculate RMSD between SHIFTS and Experiment
@@ -182,5 +184,6 @@ for i, l in enumerate(labels):
     #          transform=ax.transAxes)
 
     plt.savefig(plot_out_name + "_" + l + "_diff.png", dpi=300, bbox_inches='tight')
+    plt.savefig(plot_out_name + "_" + l + "_diff.pdf", bbox_inches='tight')
 
     plt.close()
