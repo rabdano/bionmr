@@ -74,9 +74,9 @@ for frame in tqdm(traj[::stride]):
             dist, idx = tree_nucleosome_core.query([point], k=1, eps=1e-5)
             if dist < min_dist:
                 min_dist = dist
-        f_1.write('{:.2f},'.format(min_dist[0]))
+        f_2.write('{:.2f},'.format(min_dist[0]))
         min_dists_2[i, int(frame.index / stride)] = min_dist[0]
-    f_1.write('\n')
+    f_2.write('\n')
 
 f_1.close()
 f_2.close()
