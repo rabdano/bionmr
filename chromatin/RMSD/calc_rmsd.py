@@ -1,8 +1,4 @@
-from typing import Union
-
 from bionmr_utils.md import *
-from pyxmolpp2.polymer import Frame
-
 from get_secondary_structure_residues import *
 from tqdm import tqdm
 import numpy as np
@@ -13,6 +9,8 @@ from timeit import default_timer as timer
 first_dat_file = 51
 last_dat_file = 1000
 stride = 1000  # ps
+# reference PDB
+reference_pdb = "/home/seva/chromatin/5_solution_Widom_601/pdb/Amber/1_propka/01531-propka.pdb"
 # probe atoms
 protein_and_dna_chains = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 probe = ((cName == 'I') & (aName == 'P'))
@@ -91,11 +89,12 @@ ss_residues = set(ss_residues)
 
 
 # reference atoms for alignment
-ref_ats = ref.asAtoms
-ref_align_protein = ref.asAtoms.filter(cName.is_in({"A", "B", "C", "D", "E", "F", "G", "H"}))
-ref_align_ca = ref.asAtoms.filter(aName == "CA")
-ref_align_ca_ss = ref.asAtoms.filter((aName == "CA") & (rId.is_in(ss_residues)))
-ref_align_dna = ref.asAtoms.filter(dna_align_pred)
+reference = PdbFile(reference_pdb).get_frame()
+ref_ats = reference.asAtoms
+ref_align_protein = reference.asAtoms.filter(cName.is_in({"A", "B", "C", "D", "E", "F", "G", "H"}))
+ref_align_ca = reference.asAtoms.filter(aName == "CA")
+ref_align_ca_ss = reference.asAtoms.filter((aName == "CA") & (rId.is_in(ss_residues)))
+ref_align_dna = reference.asAtoms.filter(dna_align_pred)
 
 rmsd_ref_align_protein = np.zeros(int(traj.size / stride))
 rmsd_ref_align_ca = np.zeros(int(traj.size / stride))
