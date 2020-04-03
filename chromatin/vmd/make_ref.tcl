@@ -13,7 +13,7 @@ set H [atomselect top "residue 852 to 973"]
 set dna [atomselect top "name P"]
 set dna_length [expr [$dna num] / 2]
 
-if {$dna_length == 145} {
+if {$dna_length == 144} {
     set I [atomselect top "residue 974 to 1118"]
     set J [atomselect top "residue 1119 to 1263"]
 } else {
