@@ -6,7 +6,7 @@ from timeit import default_timer as timer
 
 
 # setup trajectory parameters
-first_dat_file = 51
+first_dat_file = 1
 last_dat_file = 1000
 stride = 1000  # ps
 # reference PDB
