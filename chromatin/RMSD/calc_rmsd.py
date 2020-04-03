@@ -130,6 +130,7 @@ ref_align_ca_ss = reference.asAtoms.filter((aName == "CA") & (rId.is_in(ss_resid
 ref_align_dna = reference.asAtoms.filter(dna_align_pred)
 ref_align_inner_turn = reference.asAtoms.filter(dna_align_pred).filter(rId.is_in(inner_turn))
 ref_align_outer_turn = reference.asAtoms.filter(dna_align_pred).filter(rId.is_in(outer_turn))
+ref_align_union = reference.asAtoms.filter(((aName == "CA") & (rId.is_in(ss_residues))) | dna_align_pred)
 
 rmsd_ref_align_protein = np.zeros(int(traj.size / stride))
 rmsd_ref_align_ca = np.zeros(int(traj.size / stride))
@@ -137,6 +138,7 @@ rmsd_ref_align_ca_ss = np.zeros(int(traj.size / stride))
 rmsd_ref_align_dna = np.zeros(int(traj.size / stride))
 rmsd_ref_align_inner_turn = np.zeros(int(traj.size / stride))
 rmsd_ref_align_outer_turn = np.zeros(int(traj.size / stride))
+rmsd_ref_align_union = np.zeros(int(traj.size / stride))
 
 
 # get PBC from XST file and inpcrd file
@@ -168,6 +170,7 @@ for frame in tqdm(traj[::stride], disable=False):
         frame_align_dna = frame_ats.filter(dna_align_pred)
         frame_align_inner_turn = frame_ats.filter(dna_align_pred).filter(rId.is_in(inner_turn))
         frame_align_outer_turn = frame_ats.filter(dna_align_pred).filter(rId.is_in(outer_turn))
+        frame_align_union = frame_ats.filter(((aName == "CA") & (rId.is_in(ss_residues))) | dna_align_pred)
 
         # align reference by first frame nucleic P
         alignment = calc_alignment(frame_ats.filter(probe).toCoords, ref_ats.filter(probe).toCoords)
@@ -219,6 +222,10 @@ for frame in tqdm(traj[::stride], disable=False):
     rmsd_ref_align_outer_turn[int(frame.index / stride)] = calc_rmsd(ref_align_outer_turn.toCoords,
                                                                      frame_align_outer_turn.toCoords, alignment)
 
+    alignment = calc_alignment(ref_align_union.toCoords, frame_align_union.toCoords)
+    rmsd_ref_align_union[int(frame.index / stride)] = calc_rmsd(ref_align_union.toCoords,
+                                                                frame_align_union.toCoords, alignment)
+
 
 # write RMSD to file
 time = np.linspace((first_dat_file - 1) * 1000 + stride, last_dat_file * 1000, int(traj.size / stride))
@@ -262,5 +269,12 @@ np.savetxt(
     X=np.vstack((time, rmsd_ref_align_outer_turn)).T,
     fmt="%.5f",
     header="time[ps], rmsd_ref_align_outer_turn[A]",
+    delimiter=","
+)
+np.savetxt(
+    fname="rmsd_ref_align_union.csv",
+    X=np.vstack((time, rmsd_ref_align_union)).T,
+    fmt="%.5f",
+    header="time[ps], rmsd_ref_align_union[A]",
     delimiter=","
 )

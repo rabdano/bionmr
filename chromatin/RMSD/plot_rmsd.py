@@ -5,7 +5,7 @@ import numpy as np
 
 
 plt.rcParams.update({'font.size': 12})
-colors = ["blue", "red", "green", "magenta"]
+colors = ["blue", "red", "green", "magenta", "black"]
 
 
 def cm2inch(*tupl):
@@ -18,8 +18,9 @@ def cm2inch(*tupl):
 
 # files = sorted(glob('rmsd_*.csv'))
 files = ["rmsd_ref_align_ca_ss.csv", "rmsd_ref_align_dna.csv",
-         "rmsd_ref_align_inner_turn.csv", "rmsd_ref_align_outer_turn.csv",]
-lab = ["sec.str. CA", "DNA", "DNA inner turn", "DNA outer turn"]
+         "rmsd_ref_align_inner_turn.csv", "rmsd_ref_align_outer_turn.csv",
+         "rmsd_ref_align_union.csv"]
+lab = ["sec.str. CA", "DNA", "DNA inner turn", "DNA outer turn", "sec.str. CA & DNA"]
 plt.figure(figsize=cm2inch(16, 12), dpi=300)
 
 for i, fn in enumerate(files):
