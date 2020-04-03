@@ -10,14 +10,16 @@ first_dat_file = 51
 last_dat_file = 1000
 stride = 1000  # ps
 # reference PDB
-reference_pdb = "/home/seva/chromatin/5_solution_Widom_601/pdb/Amber/1_propka/01531-propka.pdb"
+structure = "1kx5"  # 1kx5 or 3lz0
+len_inner_turn = 39
 # probe atoms
 protein_and_dna_chains = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 probe = ((cName == 'I') & (aName == 'P'))
 dna_align_pred = ((aName == "N1") | (aName == "N9"))
-inner_turn = set(list(range(1008, 1086+1, 1)) + list(range(1153, 1231+1, 1)))
-outer_turn = set(list(range(975, 1007+1, 1)) + list(range(1120, 1152+1, 1)) +
-                 list(range(1087, 1119+1, 1)) + list(range(1232, 1264+1, 1)))
+if structure == "1kx5":
+    reference_pdb = "/home/seva/chromatin/3_solution/pdb/amber/2_tleap/1kx5_propka_renumbered.pdb"
+if structure == "3lz0":
+    reference_pdb = "/home/seva/chromatin/5_solution_Widom_601/pdb/Amber/1_propka/01531-propka.pdb"
 
 
 def get_XST(path_to_traj):
@@ -89,6 +91,34 @@ ss_residues = [r for chain_r in ss_residues_by_chain for r in chain_r]
 # print("Secondary structure residues combined")
 # print(ss_residues)
 ss_residues = set(ss_residues)
+
+
+# get residue ids for inner and outer DNA turns (-39 to 39)
+dna = ref.asAtoms.filter(aName == "P")
+dna_resids = []
+for at in dna:
+    dna_resids.append(int(at.rId.serial))
+n_dna_resids = len(dna_resids)+2  # +2 because 5' ends are not phosphorylated and we count by P atoms
+n_dna_bp = int(n_dna_resids / 2)
+idx_01 = int(dna_resids[0]-1 + n_dna_bp // 2)
+idx_02 = int(dna_resids[0]-1 + n_dna_bp + n_dna_bp // 2)
+inner_turn = set(list(range(idx_01-len_inner_turn, idx_01+len_inner_turn+1, 1)) +
+                 list(range(idx_02-len_inner_turn, idx_02+len_inner_turn+1, 1)))
+
+outer_turn = set(list(range(dna_resids[0], idx_01-len_inner_turn, 1)) +
+                 list(range(idx_01+len_inner_turn+1, dna_resids[0]+n_dna_bp+1, 1)) +
+                 list(range(dna_resids[0]+n_dna_bp+1, idx_02-len_inner_turn, 1)) +
+                 list(range(idx_02+len_inner_turn+1, dna_resids[-1]+1, 1)))
+print("Nucleotides:", n_dna_resids)
+print("Base pairs:", n_dna_bp)
+print("Middle index I:", idx_01)
+print("Middle index J:", idx_02)
+print("Inner turn:", idx_01-len_inner_turn, "-", idx_01+len_inner_turn, ",",
+                     idx_02-len_inner_turn, "-", idx_02+len_inner_turn)
+print("Outer turn:", dna_resids[0], "-", idx_01-len_inner_turn-1, ",",
+                     idx_01+len_inner_turn+1, "-", dna_resids[0]+n_dna_bp, ",",
+                     dna_resids[0]+n_dna_bp+1, "-", idx_02-len_inner_turn-1, ",",
+                     idx_02+len_inner_turn+1, "-", dna_resids[-1])
 
 
 # reference atoms for alignment
