@@ -9,8 +9,17 @@ set E [atomselect top "residue 487 to 621"]
 set F [atomselect top "residue 622 to 723"]
 set G [atomselect top "residue 724 to 851"]
 set H [atomselect top "residue 852 to 973"]
-set I [atomselect top "residue 974 to 1120"]
-set J [atomselect top "residue 1121 to 1267"]
+
+set dna [atomselect top "name P"]
+set dna_length [expr [$dna num] / 2]
+
+if {$dna_length == 145} {
+    set I [atomselect top "residue 974 to 1118"]
+    set J [atomselect top "residue 1119 to 1263"]
+} else {
+    set I [atomselect top "residue 974 to 1120"]
+    set J [atomselect top "residue 1121 to 1267"]
+}
 
 $A set chain A
 $B set chain B
