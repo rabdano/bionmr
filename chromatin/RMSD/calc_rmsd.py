@@ -15,6 +15,9 @@ reference_pdb = "/home/seva/chromatin/5_solution_Widom_601/pdb/Amber/1_propka/01
 protein_and_dna_chains = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 probe = ((cName == 'I') & (aName == 'P'))
 dna_align_pred = ((aName == "N1") | (aName == "N9"))
+inner_turn = set(list(range(1008, 1086+1, 1)) + list(range(1153, 1231+1, 1)))
+outer_turn = set(list(range(975, 1007+1, 1)) + list(range(1120, 1152+1, 1)) +
+                 list(range(1087, 1119+1, 1)) + list(range(1232, 1264+1, 1)))
 
 
 def get_XST(path_to_traj):
@@ -95,11 +98,15 @@ ref_align_protein = reference.asAtoms.filter(cName.is_in({"A", "B", "C", "D", "E
 ref_align_ca = reference.asAtoms.filter(aName == "CA")
 ref_align_ca_ss = reference.asAtoms.filter((aName == "CA") & (rId.is_in(ss_residues)))
 ref_align_dna = reference.asAtoms.filter(dna_align_pred)
+ref_align_inner_turn = reference.asAtoms.filter(dna_align_pred).filter(rId.is_in(inner_turn))
+ref_align_outer_turn = reference.asAtoms.filter(dna_align_pred).filter(rId.is_in(outer_turn))
 
 rmsd_ref_align_protein = np.zeros(int(traj.size / stride))
 rmsd_ref_align_ca = np.zeros(int(traj.size / stride))
 rmsd_ref_align_ca_ss = np.zeros(int(traj.size / stride))
 rmsd_ref_align_dna = np.zeros(int(traj.size / stride))
+rmsd_ref_align_inner_turn = np.zeros(int(traj.size / stride))
+rmsd_ref_align_outer_turn = np.zeros(int(traj.size / stride))
 
 
 # get PBC from XST file and inpcrd file
@@ -129,6 +136,8 @@ for frame in tqdm(traj[::stride], disable=False):
         frame_align_ca = frame_ats.filter(aName == "CA")
         frame_align_ca_ss = frame_ats.filter((aName == "CA") & (rId.is_in(ss_residues)))
         frame_align_dna = frame_ats.filter(dna_align_pred)
+        frame_align_inner_turn = frame_ats.filter(dna_align_pred).filter(rId.is_in(inner_turn))
+        frame_align_outer_turn = frame_ats.filter(dna_align_pred).filter(rId.is_in(outer_turn))
 
         # align reference by first frame nucleic P
         alignment = calc_alignment(frame_ats.filter(probe).toCoords, ref_ats.filter(probe).toCoords)
@@ -172,6 +181,14 @@ for frame in tqdm(traj[::stride], disable=False):
     alignment = calc_alignment(ref_align_dna.toCoords, frame_align_dna.toCoords)
     rmsd_ref_align_dna[int(frame.index / stride)] = calc_rmsd(ref_align_dna.toCoords, frame_align_dna.toCoords, alignment)
 
+    alignment = calc_alignment(ref_align_inner_turn.toCoords, frame_align_inner_turn.toCoords)
+    rmsd_ref_align_inner_turn[int(frame.index / stride)] = calc_rmsd(ref_align_inner_turn.toCoords,
+                                                                     frame_align_inner_turn.toCoords, alignment)
+
+    alignment = calc_alignment(ref_align_outer_turn.toCoords, frame_align_outer_turn.toCoords)
+    rmsd_ref_align_outer_turn[int(frame.index / stride)] = calc_rmsd(ref_align_outer_turn.toCoords,
+                                                                     frame_align_outer_turn.toCoords, alignment)
+
 
 # write RMSD to file
 time = np.linspace((first_dat_file - 1) * 1000 + stride, last_dat_file * 1000, int(traj.size / stride))
@@ -201,5 +218,19 @@ np.savetxt(
     X=np.vstack((time, rmsd_ref_align_dna)).T,
     fmt="%.5f",
     header="time[ps], rmsd_ref_align_dna[A]",
+    delimiter=","
+)
+np.savetxt(
+    fname="rmsd_ref_align_inner_turn.csv",
+    X=np.vstack((time, rmsd_ref_align_inner_turn)).T,
+    fmt="%.5f",
+    header="time[ps], rmsd_ref_align_inner_turn[A]",
+    delimiter=","
+)
+np.savetxt(
+    fname="rmsd_ref_align_outer_turn.csv",
+    X=np.vstack((time, rmsd_ref_align_outer_turn)).T,
+    fmt="%.5f",
+    header="time[ps], rmsd_ref_align_outer_turn[A]",
     delimiter=","
 )

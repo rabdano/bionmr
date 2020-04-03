@@ -2,7 +2,6 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-from glob import glob
 
 
 plt.rcParams.update({'font.size': 12})
@@ -18,8 +17,9 @@ def cm2inch(*tupl):
 
 
 # files = sorted(glob('rmsd_*.csv'))
-files = ["rmsd_ref_align_ca_ss.csv", "rmsd_ref_align_dna.csv"]
-lab = ["sec.str. CA", "DNA N1, N9"]
+files = ["rmsd_ref_align_ca_ss.csv", "rmsd_ref_align_dna.csv",
+         "rmsd_ref_align_inner_turn.csv", "rmsd_ref_align_outer_turn.csv",]
+lab = ["sec.str. CA", "DNA", "DNA inner turn", "DNA outer turn"]
 plt.figure(figsize=cm2inch(16, 12), dpi=300)
 
 for i, fn in enumerate(files):
