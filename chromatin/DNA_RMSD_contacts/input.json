@@ -1,0 +1,10 @@
+{
+  "first_dat_file": 1,
+  "last_dat_file": 1500,
+  "stride": 1000,
+  "cutoff": 4.0,
+  "reference_pdb": "/home/seva/chromatin/5_solution_Widom_601/pdb/Amber/1_propka/01531-propka.pdb",
+  "rmsf_fnout": "rmsf.csv",
+  "contacts_fnout": "contacts.csv",
+  "fig_fn": "DNA_RMSF_contacts"
+}
