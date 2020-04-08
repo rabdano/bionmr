@@ -196,12 +196,12 @@ for i in range(n_dna_bp):
     rmsd[i] = np.sqrt(cum_sd / int(traj.size/stride))
 
 
-# write RMSF to file
+# write RMSD to file
 position = np.arange(-(n_dna_bp//2), n_dna_bp//2 + 1, 1)
 np.savetxt(
     fname=rmsd_fnout,
     X=np.vstack((position, rmsd)).T,
     fmt="%.5f",
-    header="position, rmsf[A]",
+    header="position, rmsd[A]",
     delimiter=","
 )
