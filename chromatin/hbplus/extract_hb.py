@@ -24,6 +24,26 @@ n_steps = last_dat_file - first_dat_file + 1
 probe = ((cName == 'J') & (aName == 'P'))
 protein_and_dna_chains = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
+# map for renaming residues
+rename_map = [('HID', 'HIS'),
+              ('HIE', 'HIS'),
+              ('HIP', 'HIS'),
+              ('LYN', 'LYS'),
+              ('GLH', 'GLU'),
+              ('CYM', 'CYS'),
+              ('DA3', 'A  '),
+              ('DT3', 'T  '),
+              ('DG3', 'G  '),
+              ('DC3', 'C  '),
+              ('DA5', 'A  '),
+              ('DT5', 'T  '),
+              ('DG5', 'G  '),
+              ('DC5', 'C  '),
+              ('DA', 'A '),
+              ('DT', 'T '),
+              ('DG', 'G '),
+              ('DC', 'C ')]
+
 
 def mkdir_p(path):
     try:
@@ -113,6 +133,10 @@ def parse_hbplus_output(hbplus_out):
     hbs = set()
     for i, line in enumerate(f):
         if i >= header:
+            # check for "non-hydrogen" bonds
+            if int(line[52:57].strip()) == -1:
+                print(line)
+                continue
             d_cId = line[0].strip()
             d_rId = int(line[1:5].strip())
             d_rName = line[6:9].strip()
@@ -201,6 +225,11 @@ for frame in tqdm(traj[::stride]):
         fmt = 'CRYST1%9.3f%9.3f%9.3f%7.2f%7.2f%7.2f%10s%4s\n'
         f.write(fmt % (a, b, c, alpha, beta, gamma, ' ' * 10, ' ' * 4))
         frame_ats.to_pdb(f)
+
+    # rename residues from amber to canonical
+    for n1, n2 in rename_map:
+        call('sed -i "s/%s/%s/g" ' % (n1, n2) + output_dir + '/' + fn, shell=True)
+
 sys.stdout.write('\n')
 
 files = sorted(glob(output_dir + '/*.pdb'))
