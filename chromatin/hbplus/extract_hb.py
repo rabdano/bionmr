@@ -134,7 +134,7 @@ def parse_hbplus_output(hbplus_out):
     for i, line in enumerate(f):
         if i >= header:
             # check for "non-hydrogen" bonds
-            if int(line[52:57].strip()) == -1:
+            if float(line[52:57].strip()) <= 0:
                 print(line)
                 continue
             d_cId = line[0].strip()
