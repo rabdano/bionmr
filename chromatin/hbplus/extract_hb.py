@@ -31,18 +31,14 @@ rename_map = [('HID', 'HIS'),
               ('LYN', 'LYS'),
               ('GLH', 'GLU'),
               ('CYM', 'CYS'),
-              ('DA3', 'A  '),
-              ('DT3', 'T  '),
-              ('DG3', 'G  '),
-              ('DC3', 'C  '),
-              ('DA5', 'A  '),
-              ('DT5', 'T  '),
-              ('DG5', 'G  '),
-              ('DC5', 'C  '),
-              ('DA', 'A '),
-              ('DT', 'T '),
-              ('DG', 'G '),
-              ('DC', 'C ')]
+              ('DA3', 'DA '),
+              ('DT3', 'DT '),
+              ('DG3', 'DG '),
+              ('DC3', 'DC '),
+              ('DA5', 'DA '),
+              ('DT5', 'DT '),
+              ('DG5', 'DG '),
+              ('DC5', 'DC ')]
 
 
 def mkdir_p(path):
