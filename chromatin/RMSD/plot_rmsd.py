@@ -34,7 +34,7 @@ lab = header.split(",")
 #  plot parameters
 #
 plt.rcParams.update({'font.size': 12})
-colors = ["blue", "red", "black", "magenta", "green"]
+colors = ["blue", "red", "black", "green", "magenta"]
 fig, axs = plt.subplots(1, 2, figsize=(32/2.54, 12/2.54), dpi=300)
 
 
