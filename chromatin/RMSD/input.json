@@ -1,0 +1,12 @@
+{
+  "first_dat_file": 1,
+  "last_dat_file": 1000,
+  "stride": 1000,
+  "structure": "3lz0",
+  "reference_pdb": "/home/seva/chromatin/5_solution_Widom_601/pdb/Amber/1_propka/01531-propka.pdb",
+  "rmsd_fnout": "rmsd.csv",
+  "len_inner_turn": 38,
+  "fig_fn": "rmsd",
+  "panel_labels": ["A", "B"],
+  "axis_limits": [-10, 1010, 0.9, 6.0]
+}
