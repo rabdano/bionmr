@@ -10,6 +10,7 @@ import json
 #
 with open("input.json", "r") as f:
     pars = json.load(f)
+path_to_traj = pars["path_to_traj"]
 first_dat_file = int(pars["first_dat_file"])
 last_dat_file = int(pars["last_dat_file"])
 stride = int(pars["stride"])
@@ -29,7 +30,6 @@ dna_align_pred = aName.is_in({"N1", "N9"})
 #
 #  load trajectory
 #
-path_to_traj = "../.."
 traj, ref = traj_from_dir(path=path_to_traj,
                           reference_pdb=path_to_traj + "/1_build/ref.pdb",
                           stride=1,
