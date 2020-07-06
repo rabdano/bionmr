@@ -1,0 +1,11 @@
+{
+  "path_to_traj": "../..",
+  "first_dat_file": 0,
+  "last_dat_file": 999,
+  "stride": 1000,
+  "reference_pdb": "/home/seva/pb6/trj_bussi_tip4pew/loopex/pb6_loopex/0_prepare/ref.pdb",
+  "ig_like_domain_start": 376,
+  "rmsd_fnout": "rmsd.csv",
+  "fig_fn": "rmsd",
+  "axis_limits": [-10, 1010, 0, 6.0]
+}
