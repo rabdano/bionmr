@@ -25,7 +25,7 @@ scaling = float(pars["scaling"])
 ratio = float(pars["ratio"])
 remove_first_point = pars["remove_first_point"]
 align = pars["align"]
-ig_like_domain_start=pars["ig_like_domain_start"]
+ig_like_domain_start = pars["ig_like_domain_start"]
 
 
 #
